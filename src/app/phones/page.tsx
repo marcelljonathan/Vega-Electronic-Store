@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import type { Metadata } from "next";
 import { phones } from "@/lib/phones";
 
@@ -24,9 +26,10 @@ export default function PhonesPage() {
 
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {phones.map((phone) => (
-          <div
+          <Link
             key={phone.slug}
-            className="flex flex-col items-center gap-5 rounded-[18px] border border-line bg-card p-7 text-center"
+            href={`/phones/${phone.slug}`}
+            className="flex flex-col items-center gap-5 rounded-[18px] border border-line bg-card p-7 text-center transition-colors hover:border-accent"
           >
             <div className="relative grid w-full place-items-center py-2">
               <div className="glow-layer" />
@@ -49,7 +52,7 @@ export default function PhonesPage() {
             <span className="text-sm font-semibold text-accent">
               From ${phone.price.toLocaleString("en-US")}
             </span>
-          </div>
+          </Link>
         ))}
       </div>
     </div>
