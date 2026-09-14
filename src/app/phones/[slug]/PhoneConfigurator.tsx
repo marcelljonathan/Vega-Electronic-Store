@@ -6,6 +6,7 @@ import type { Phone, SpecIconName } from "@/lib/phones";
 export default function PhoneConfigurator({ phone }: { phone: Phone }) {
   const [color, setColor] = useState(phone.colors[0]);
   const [storage, setStorage] = useState(phone.storage[0]);
+  const [specsOpen, setSpecsOpen] = useState(false);
 
   const price = phone.price + storage.priceDelta;
 
@@ -106,8 +107,56 @@ export default function PhoneConfigurator({ phone }: { phone: Phone }) {
               </div>
             </div>
           ))}
+          <button
+            onClick={() => setSpecsOpen(true)}
+            className="mt-2 self-start text-sm font-semibold text-accent"
+          >
+            See full specifications →
+          </button>
         </div>
       </div>
+
+      {specsOpen && (
+        <div
+          className="fixed inset-0 z-100 flex items-center justify-center p-4"
+          onClick={() => setSpecsOpen(false)}
+        >
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+          <div
+            className="relative z-10 max-h-[80vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-line bg-bg p-7"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between pb-4">
+              <h2 className="text-xl font-semibold">Specifications</h2>
+              <button
+                onClick={() => setSpecsOpen(false)}
+                aria-label="Close"
+                className="grid h-8 w-8 place-items-center rounded-full border border-line text-muted transition-colors hover:text-fg"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="flex flex-col gap-6">
+              {phone.specGroups.map((group) => (
+                <div key={group.group} className="flex flex-col gap-1">
+                  <span className="pb-1 text-sm font-semibold text-accent">
+                    {group.group}
+                  </span>
+                  {group.items.map((item) => (
+                    <div
+                      key={item.label}
+                      className="flex items-center justify-between border-b border-line py-2 last:border-b-0"
+                    >
+                      <span className="text-sm text-muted">{item.label}</span>
+                      <span className="text-sm font-medium">{item.value}</span>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
