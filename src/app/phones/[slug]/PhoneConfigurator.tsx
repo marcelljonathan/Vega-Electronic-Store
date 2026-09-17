@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { Phone, SpecIconName } from "@/lib/phones";
+import { useCart } from "@/app/CartProvider";
 
 export default function PhoneConfigurator({ phone }: { phone: Phone }) {
   const [color, setColor] = useState(phone.colors[0]);
@@ -9,6 +10,21 @@ export default function PhoneConfigurator({ phone }: { phone: Phone }) {
   const [specsOpen, setSpecsOpen] = useState(false);
 
   const price = phone.price + storage.priceDelta;
+  const { addItem, openCart } = useCart();
+
+  function handleAdd() {
+    addItem({
+      phoneSlug: phone.slug,
+      name: phone.name,
+      colorName: color.name,
+      screenA: color.screenA,
+      screenB: color.screenB,
+      storageSize: storage.size,
+      ram: storage.ram,
+      unitPrice: price,
+    });
+    openCart();
+  }
 
   return (
     <div className="grid grid-cols-1 gap-12 py-8 lg:grid-cols-2">
@@ -90,8 +106,11 @@ export default function PhoneConfigurator({ phone }: { phone: Phone }) {
           <span className="text-3xl font-semibold">
             ${price.toLocaleString("en-US")}
           </span>
-          <button className="rounded-full bg-accent px-7 py-3 text-sm font-semibold text-white">
-            Buy now
+          <button
+            onClick={handleAdd}
+            className="rounded-full bg-accent px-7 py-3 text-sm font-semibold text-white"
+          >
+            Add to cart
           </button>
         </div>
 

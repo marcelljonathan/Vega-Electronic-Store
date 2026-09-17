@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Nav from "./Nav";
+import CartDrawer from "./CartDrawer";
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const [mode, setMode] = useState<"light" | "dark">("light");
@@ -13,6 +14,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     >
       <Nav mode={mode} setMode={setMode} />
       <main className="pb-16">{children}</main>
+      <CartDrawer />
     </div>
   );
 }
