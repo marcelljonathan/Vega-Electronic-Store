@@ -14,13 +14,12 @@ export default function PhoneConfigurator({ phone }: { phone: Phone }) {
 
   function handleAdd() {
     addItem({
-      phoneSlug: phone.slug,
+      productSlug: phone.slug,
       name: phone.name,
       colorName: color.name,
       screenA: color.screenA,
       screenB: color.screenB,
-      storageSize: storage.size,
-      ram: storage.ram,
+      option: `${storage.size} · ${storage.ram} RAM`,
       unitPrice: price,
     });
     openCart();

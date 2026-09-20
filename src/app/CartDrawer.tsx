@@ -94,7 +94,7 @@ export default function CartDrawer() {
                     <div className="flex flex-1 flex-col gap-1">
                       <span className="text-sm font-semibold">{item.name}</span>
                       <span className="text-xs text-muted">
-                        {item.colorName} · {item.storageSize} · {item.ram} RAM
+                        {item.colorName} · {item.option}
                       </span>
                       <div className="mt-1 flex items-center gap-3">
                         <div className="flex items-center rounded-full border border-line">

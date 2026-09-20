@@ -3,16 +3,16 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
 export type CartItem = {
-  phoneSlug: string;
+  productSlug: string;
   name: string;
-  colorName: string;
+  colorName: string; // the picked color / band
   screenA: string;
   screenB: string;
-  storageSize: string;
-  ram: string;
+  option: string; // e.g. "256GB · 8GB RAM" (phone) or "45mm" (watch)
   unitPrice: number;
   quantity: number;
 };
+
 
 type NewItem = Omit<CartItem, "quantity">;
 
@@ -32,12 +32,13 @@ type CartContextValue = {
 const CartContext = createContext<CartContextValue | null>(null);
 
 export function itemKey(item: {
-  phoneSlug: string;
+  productSlug: string;
   colorName: string;
-  storageSize: string;
+  option: string;
 }) {
-  return `${item.phoneSlug}-${item.colorName}-${item.storageSize}`;
+  return `${item.productSlug}-${item.colorName}-${item.option}`;
 }
+
 
 const STORAGE_KEY = "vega-cart";
 
