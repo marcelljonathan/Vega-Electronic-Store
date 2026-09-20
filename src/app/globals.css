@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+/* Design tokens — light is default; the toggle sets data-mode="dark". */
 :root,
 [data-mode="light"] {
   --bg: #f5f5f7;
@@ -29,6 +30,7 @@
   --floor: rgba(0, 0, 0, 0.5);
 }
 
+/* Expose the tokens to Tailwind (bg-bg, text-fg, border-line, etc.). */
 @theme inline {
   --color-bg: var(--bg);
   --color-card: var(--bg-2);
@@ -44,6 +46,13 @@ body {
   color: var(--text);
 }
 
+/* Give every enabled button a pointer cursor. */
+button:not(:disabled) {
+  cursor: pointer;
+}
+
+
+/* The phone — a CSS placeholder; colors come from the tokens above. */
 .device {
   position: relative;
   z-index: 1;
@@ -114,6 +123,7 @@ body {
   z-index: 0;
 }
 
+/* Phone color (data-color) and card-size (data-size) variants. */
 .device[data-color="spark"] {
   --screen-a: #ff8a5c;
   --screen-b: #ffd9c0;
@@ -134,10 +144,116 @@ body {
   width: clamp(120px, 42vw, 168px);
 }
 
+/* The watch — a CSS placeholder; band takes the color, case stays neutral. */
+.watch {
+  position: relative;
+  z-index: 1;
+  --band-a: #6aa8ff;
+  --band-b: #cfe2ff;
+  width: clamp(120px, 20vw, 180px);
+  aspect-ratio: 200 / 300;
+}
+.watch .band {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  width: 40%;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(160deg, var(--band-a), var(--band-b));
+}
+.watch .case {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 72%;
+  aspect-ratio: 1 / 1.16;
+  border-radius: 30%;
+  background: var(--device-body);
+  padding: 8%;
+  box-shadow:
+    0 24px 48px -20px var(--floor),
+    inset 0 0 0 1px var(--device-edge);
+  z-index: 1;
+}
+.watch .face {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 26%;
+  overflow: hidden;
+  background:
+    radial-gradient(
+      circle at 50% 28%,
+      rgba(255, 255, 255, 0.14),
+      transparent 55%
+    ),
+    linear-gradient(160deg, #23252b, #101116);
+}
+.watch .face::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 34%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 40%, var(--band-a), var(--band-b));
+}
+.watch .crown {
+  position: absolute;
+  right: 10%;
+  top: 45%;
+  width: 5.5%;
+  height: 10%;
+  border-radius: 40px;
+  background: var(--device-body);
+  box-shadow: inset 0 0 0 1px var(--device-edge);
+  z-index: 2;
+}
+.watch[data-size="card"] {
+  width: clamp(96px, 30vw, 132px);
+}
+
+/* Heart-rate line — an accent beam sweeps across a faint waveform. */
+.pulse-svg {
+  width: 100%;
+  max-width: 340px;
+}
+.pulse-base,
+.pulse-beam {
+  fill: none;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.pulse-base {
+  stroke: var(--line);
+}
+.pulse-beam {
+  stroke: var(--accent);
+  stroke-dasharray: 40 260;
+  stroke-dashoffset: 0;
+  filter: drop-shadow(0 0 5px var(--glow));
+  animation: pulse-sweep 2.6s linear infinite;
+}
+@keyframes pulse-sweep {
+  to {
+    stroke-dashoffset: -300;
+  }
+}
 
 @media (prefers-reduced-motion: reduce) {
   .device,
   [data-mode] {
     transition: none;
+  }
+  /* Freeze the beam for reduced motion. */
+  .pulse-beam {
+    animation: none;
+    stroke-dasharray: none;
   }
 }

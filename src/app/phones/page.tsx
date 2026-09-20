@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 };
 
 export default function PhonesPage() {
-  // The families, in first-appearance order (Spark, Lumen, Ember, Halo).
+  // Families in first-appearance order.
   const families = Array.from(new Set(phones.map((p) => p.family)));
 
   return (

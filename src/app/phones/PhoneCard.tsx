@@ -9,8 +9,7 @@ export default function PhoneCard({ phone }: { phone: Phone }) {
 
   return (
     <div className="relative flex flex-col items-center gap-4 rounded-2xl p-6 text-center transition-colors hover:bg-card">
-      {/* Whole-card click target → detail page. Sits above the decorative
-          phone (z-10) but below the color dots (z-20). */}
+      {/* Whole-card link to the detail page (z-10, below the dots at z-20). */}
       <Link
         href={`/phones/${phone.slug}`}
         aria-label={phone.name}

@@ -1,7 +1,4 @@
-// The Vega phone lineup — the single source of truth for product data.
-// Four families (Spark, Lumen, Ember, Halo), each with three variants
-// (Base, Plus, Pro). Higher variants = better chip & camera. Each variant
-// also offers two storage/RAM options that adjust the price.
+// The Vega phone lineup — 4 families x 3 variants, the source of truth.
 
 export type SpecIconName = "display" | "camera" | "battery" | "chip";
 
@@ -20,7 +17,7 @@ export type Phone = {
   specGroups: { group: string; items: { label: string; value: string }[] }[];
 };
 
-// Shared per-family colors (every variant in a family offers these).
+// Shared per-family colors.
 const sparkColors = [
   { name: "Coral", screenA: "#ff8a5c", screenB: "#ffd9c0" },
   { name: "Mint", screenA: "#5fd0b0", screenB: "#c8f2e6" },
@@ -43,7 +40,7 @@ const haloColors = [
 ];
 
 export const phones: Phone[] = [
-  // ----- Spark family (entry) — 6.1" OLED 90Hz, 4,200 mAh -----
+  // ----- Spark family (entry) -----
   {
     slug: "spark",
     family: "Spark",
@@ -187,7 +184,7 @@ export const phones: Phone[] = [
     ],
   },
 
-  // ----- Lumen family (core) — 6.4" OLED 120Hz, 4,600 mAh -----
+  // ----- Lumen family (core) -----
   {
     slug: "lumen",
     family: "Lumen",
@@ -331,7 +328,7 @@ export const phones: Phone[] = [
     ],
   },
 
-  // ----- Ember family (pro) — 6.7" LTPO OLED 120Hz, 5,000 mAh -----
+  // ----- Ember family (pro) -----
   {
     slug: "ember",
     family: "Ember",
@@ -475,7 +472,7 @@ export const phones: Phone[] = [
     ],
   },
 
-  // ----- Halo family (ultra) — 6.9" LTPO OLED 144Hz, 5,400 mAh -----
+  // ----- Halo family (ultra) -----
   {
     slug: "halo",
     family: "Halo",
