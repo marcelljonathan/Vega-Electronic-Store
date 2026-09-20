@@ -15,6 +15,7 @@ export default function PhoneConfigurator({ phone }: { phone: Phone }) {
   function handleAdd() {
     addItem({
       productSlug: phone.slug,
+      kind: "phone",
       name: phone.name,
       colorName: color.name,
       screenA: color.screenA,

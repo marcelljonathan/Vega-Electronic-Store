@@ -144,6 +144,12 @@ button:not(:disabled) {
   width: clamp(120px, 42vw, 168px);
 }
 
+/* Tiny variant for the cart line thumbnail. */
+.device[data-size="thumb"] {
+  width: 34px;
+  box-shadow: inset 0 0 0 1px var(--device-edge);
+}
+
 /* The watch — a CSS placeholder; band takes the color, case stays neutral. */
 .watch {
   position: relative;
@@ -216,6 +222,14 @@ button:not(:disabled) {
 }
 .watch[data-size="card"] {
   width: clamp(96px, 30vw, 132px);
+}
+
+/* Tiny variant for the cart line thumbnail. */
+.watch[data-size="thumb"] {
+  width: 46px;
+}
+.watch[data-size="thumb"] .case {
+  box-shadow: inset 0 0 0 1px var(--device-edge);
 }
 
 /* Heart-rate line — an accent beam sweeps across a faint waveform. */

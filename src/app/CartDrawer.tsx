@@ -85,12 +85,42 @@ export default function CartDrawer() {
                 const key = itemKey(item);
                 return (
                   <div key={key} className="flex gap-4">
-                    <div
-                      className="h-20 w-14 shrink-0 rounded-lg"
-                      style={{
-                        background: `linear-gradient(158deg, ${item.screenA}, ${item.screenB})`,
-                      }}
-                    />
+                    <div className="grid h-20 w-14 shrink-0 place-items-center rounded-lg bg-card">
+                      {item.kind === "watch" ? (
+                        <div
+                          className="watch"
+                          data-size="thumb"
+                          style={
+                            {
+                              "--band-a": item.screenA,
+                              "--band-b": item.screenB,
+                            } as React.CSSProperties
+                          }
+                        >
+                          <div className="band" />
+                          <div className="case">
+                            <div className="face" />
+                          </div>
+                          <div className="crown" />
+                        </div>
+                      ) : (
+                        <div
+                          className="device"
+                          data-size="thumb"
+                          style={
+                            {
+                              "--screen-a": item.screenA,
+                              "--screen-b": item.screenB,
+                            } as React.CSSProperties
+                          }
+                        >
+                          <div className="screen">
+                            <div className="glare" />
+                          </div>
+                          <div className="cam" />
+                        </div>
+                      )}
+                    </div>
                     <div className="flex flex-1 flex-col gap-1">
                       <span className="text-sm font-semibold">{item.name}</span>
                       <span className="text-xs text-muted">
@@ -99,7 +129,9 @@ export default function CartDrawer() {
                       <div className="mt-1 flex items-center gap-3">
                         <div className="flex items-center rounded-full border border-line">
                           <button
-                            onClick={() => updateQuantity(key, item.quantity - 1)}
+                            onClick={() =>
+                              updateQuantity(key, item.quantity - 1)
+                            }
                             aria-label="Decrease quantity"
                             className="px-2.5 py-1 text-muted transition-colors hover:text-fg"
                           >
@@ -109,7 +141,9 @@ export default function CartDrawer() {
                             {item.quantity}
                           </span>
                           <button
-                            onClick={() => updateQuantity(key, item.quantity + 1)}
+                            onClick={() =>
+                              updateQuantity(key, item.quantity + 1)
+                            }
                             aria-label="Increase quantity"
                             className="px-2.5 py-1 text-muted transition-colors hover:text-fg"
                           >
@@ -125,7 +159,8 @@ export default function CartDrawer() {
                       </div>
                     </div>
                     <span className="text-sm font-medium">
-                      ${(item.unitPrice * item.quantity).toLocaleString("en-US")}
+                      $
+                      {(item.unitPrice * item.quantity).toLocaleString("en-US")}
                     </span>
                   </div>
                 );

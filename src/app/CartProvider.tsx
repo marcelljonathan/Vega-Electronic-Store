@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 export type CartItem = {
   productSlug: string;
+  kind: "phone" | "watch";
   name: string;
   colorName: string; // the picked color / band
   screenA: string;

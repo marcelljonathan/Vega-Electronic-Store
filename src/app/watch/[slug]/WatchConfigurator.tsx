@@ -16,6 +16,7 @@ export default function WatchConfigurator({ watch }: { watch: Watch }) {
   function handleAdd() {
     addItem({
       productSlug: watch.slug,
+      kind: "watch",
       name: watch.name,
       colorName: band.name,
       screenA: band.bandA,
