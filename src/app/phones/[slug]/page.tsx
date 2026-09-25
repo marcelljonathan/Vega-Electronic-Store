@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { phones } from "@/lib/phones";
 import PhoneConfigurator from "./PhoneConfigurator";
+import PhoneFeatures from "./PhoneFeatures";
 
 export function generateStaticParams() {
   return phones.map((phone) => ({ slug: phone.slug }));
@@ -36,7 +37,17 @@ export default async function PhoneDetail({
       >
         ← All phones
       </Link>
+  
+      <header className="flex flex-col items-center gap-3 pt-10 pb-4 text-center">
+        <h1 className="text-balance text-4xl font-medium tracking-tight sm:text-5xl">
+          {phone.name}
+        </h1>
+        <p className="max-w-[46ch] text-lg text-muted">{phone.tagline}</p>
+      </header>
+
+      <PhoneFeatures phone={phone} />
       <PhoneConfigurator phone={phone} />
+
     </div>
   );
 }
