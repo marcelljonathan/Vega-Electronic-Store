@@ -35,7 +35,7 @@ export const watches: Watch[] = [
     slug: "pulse",
     name: "Vega Pulse",
     tagline: "Your day, on your wrist.",
-    price: 199,
+    price: 99,
     description:
       "The essential Vega watch — a bright always-on display, full health tracking, and multi-day battery in a light aluminium body.",
     bands: [
@@ -117,7 +117,7 @@ export const watches: Watch[] = [
     slug: "pulse-pro",
     name: "Vega Pulse Pro",
     tagline: "The pinnacle, on your wrist.",
-    price: 349,
+    price: 199,
     description:
       "A titanium body, a brighter LTPO display, ECG and advanced sensors, and the longest battery in the line.",
     bands: [
@@ -200,7 +200,7 @@ export const watches: Watch[] = [
     slug: "move",
     name: "Vega Move",
     tagline: "Built to go the distance.",
-    price: 229,
+    price: 139,
     description:
       "The sport watch — dual-band GPS, a rugged reinforced body, and training metrics for every workout.",
     bands: [

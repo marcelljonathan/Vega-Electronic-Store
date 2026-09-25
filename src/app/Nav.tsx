@@ -6,7 +6,7 @@ type Mode = "light" | "dark";
 const links = [
   { label: "Phones", href: "/phones" },
   { label: "Watch", href: "/watch" },
-  { label: "Audio", href: "#" },
+  { label: "Audio", href: "/audio" },
   { label: "Support", href: "#" },
 ];
 

@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useCart, itemKey } from "./CartProvider";
+import { useCart, itemKey, type CartItem } from "./CartProvider";
+import AudioArt from "./audio/AudioArt";
 
 export default function CartDrawer() {
   const {
@@ -85,46 +86,16 @@ export default function CartDrawer() {
                 const key = itemKey(item);
                 return (
                   <div key={key} className="flex gap-4">
+                    {/* Mini product placeholder */}
                     <div className="grid h-20 w-14 shrink-0 place-items-center rounded-lg bg-card">
-                      {item.kind === "watch" ? (
-                        <div
-                          className="watch"
-                          data-size="thumb"
-                          style={
-                            {
-                              "--band-a": item.screenA,
-                              "--band-b": item.screenB,
-                            } as React.CSSProperties
-                          }
-                        >
-                          <div className="band" />
-                          <div className="case">
-                            <div className="face" />
-                          </div>
-                          <div className="crown" />
-                        </div>
-                      ) : (
-                        <div
-                          className="device"
-                          data-size="thumb"
-                          style={
-                            {
-                              "--screen-a": item.screenA,
-                              "--screen-b": item.screenB,
-                            } as React.CSSProperties
-                          }
-                        >
-                          <div className="screen">
-                            <div className="glare" />
-                          </div>
-                          <div className="cam" />
-                        </div>
-                      )}
+                      <ProductThumb item={item} />
                     </div>
                     <div className="flex flex-1 flex-col gap-1">
                       <span className="text-sm font-semibold">{item.name}</span>
                       <span className="text-xs text-muted">
-                        {item.colorName} · {item.option}
+                        {item.option
+                          ? `${item.colorName} · ${item.option}`
+                          : item.colorName}
                       </span>
                       <div className="mt-1 flex items-center gap-3">
                         <div className="flex items-center rounded-full border border-line">
@@ -184,6 +155,48 @@ export default function CartDrawer() {
           </>
         )}
       </aside>
+    </div>
+  );
+}
+
+// The right mini placeholder for a cart line, based on its product kind.
+function ProductThumb({ item }: { item: CartItem }) {
+  const style = {
+    "--screen-a": item.screenA,
+    "--screen-b": item.screenB,
+    "--band-a": item.screenA,
+    "--band-b": item.screenB,
+  } as React.CSSProperties;
+
+  if (item.kind === "watch") {
+    return (
+      <div className="watch" data-size="thumb" style={style}>
+        <div className="band" />
+        <div className="case">
+          <div className="face" />
+        </div>
+        <div className="crown" />
+      </div>
+    );
+  }
+
+  if (item.kind === "buds" || item.kind === "headphone") {
+    return (
+      <AudioArt
+        shape={item.kind}
+        size="thumb"
+        a={item.screenA}
+        b={item.screenB}
+      />
+    );
+  }
+
+  return (
+    <div className="device" data-size="thumb" style={style}>
+      <div className="screen">
+        <div className="glare" />
+      </div>
+      <div className="cam" />
     </div>
   );
 }
