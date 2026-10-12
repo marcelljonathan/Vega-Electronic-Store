@@ -482,7 +482,7 @@ export const phones: Phone[] = [
     tagline: "Made to glow.",
     price: 799,
     description:
-      "Our brightest, sharpest display yet — engineered to come alive in your hand, with pro cameras.",
+      "A brilliant 2,000-nit display that comes alive in your hand, with pro cameras to match.",
     colors: emberColors,
     storage: [
       { size: "256GB", ram: "8GB", priceDelta: 0 },
@@ -582,7 +582,7 @@ export const phones: Phone[] = [
     family: "Ember",
     name: "Vega Ember Pro",
     tier: "Pro",
-    tagline: "The pro that glows brightest.",
+    tagline: "Ember, at full power.",
     price: 1099,
     description:
       "A telephoto camera, more storage, and the fastest Ember chip — pro photography, redefined.",

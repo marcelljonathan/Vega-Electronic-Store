@@ -27,7 +27,7 @@ export default function PhoneConfigurator({ phone }: { phone: Phone }) {
   }
 
   return (
-    <section className="mt-16 border-t border-line pt-14">
+    <section id="configure" className="mt-16 scroll-mt-24 border-t border-line pt-14">
       <div className="flex flex-col items-center gap-2 pb-10 text-center">
         <span className="text-xs font-bold uppercase tracking-[0.24em] text-muted">
           Make it yours

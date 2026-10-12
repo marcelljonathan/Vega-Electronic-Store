@@ -68,7 +68,7 @@ export default function SupportPage() {
       </section>
 
       {/* Contact */}
-      <section className="mt-16 grid grid-cols-1 gap-12 border-t border-line pt-14 lg:grid-cols-[1fr_1.4fr]">
+      <section id="contact" className="mt-16 grid scroll-mt-24 grid-cols-1 gap-12 border-t border-line pt-14 lg:grid-cols-[1fr_1.4fr]">
         <div className="flex flex-col gap-8">
           <div className="flex flex-col gap-2">
             <span className="text-xs font-bold uppercase tracking-[0.24em] text-muted">
