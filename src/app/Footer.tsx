@@ -69,7 +69,8 @@ export default function Footer() {
       </div>
       <div className="border-t border-line">
         <p className="mx-auto max-w-280 px-7 py-5 text-xs text-muted">
-          © 2026 Vega · A fictional brand.
+          A fictional brand. Products, prices and checkout are for
+          demonstration only.
         </p>
       </div>
     </footer>

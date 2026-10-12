@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useCart } from "./CartProvider";
 
@@ -18,9 +19,14 @@ export default function Nav({
   setMode: (m: Mode) => void;
 }) {
   const { count, openCart } = useCart();
+  const hidden = useHideOnScroll();
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-line bg-bg/70 backdrop-blur-md">
+    <nav
+      className={`sticky top-0 z-50 border-b border-line bg-bg/70 backdrop-blur-md transition-transform duration-300 focus-within:translate-y-0 motion-reduce:transition-none ${
+        hidden ? "-translate-y-full" : "translate-y-0"
+      }`}
+    >
       <div className="mx-auto flex max-w-280 items-center gap-6 px-7 py-5">
         <Link href="/" className="text-lg font-extrabold tracking-[0.16em]">
           VEGA
@@ -64,6 +70,29 @@ export default function Nav({
       </div>
     </nav>
   );
+}
+
+// Hides the nav while scrolling down and brings it back on any scroll up.
+// It always shows near the top of the page, and small jitters are ignored.
+function useHideOnScroll() {
+  const [hidden, setHidden] = useState(false);
+  const lastY = useRef(0);
+
+  useEffect(() => {
+    const onScroll = () => {
+      const y = window.scrollY;
+      const delta = y - lastY.current;
+      if (y < 80) setHidden(false);
+      else if (delta > 8) setHidden(true);
+      else if (delta < -8) setHidden(false);
+      if (Math.abs(delta) > 8 || y < 80) lastY.current = y;
+    };
+    lastY.current = window.scrollY;
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  return hidden;
 }
 
 function MoonIcon() {
