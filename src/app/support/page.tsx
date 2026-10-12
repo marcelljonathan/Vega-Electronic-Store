@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import HelpCenter from "./HelpCenter";
 import ContactForm from "./ContactForm";
+import { supportContact } from "@/lib/contact";
 
 export const metadata: Metadata = {
   title: "Support — Vega",
@@ -17,16 +18,19 @@ type SupportIconName =
 
 const policies = [
   {
+    id: "warranty",
     icon: "warranty",
     title: "1-year warranty",
     body: "Every Vega product is covered for a full year against manufacturing defects, at no extra cost.",
   },
   {
+    id: "repairs",
     icon: "repair",
     title: "Easy repairs",
     body: "Something broken? Tell us what happened and we'll arrange the pickup, the repair and the trip back — usually within 5 business days.",
   },
   {
+    id: "shipping",
     icon: "shipping",
     title: "Free shipping & 30-day returns",
     body: "Every order ships free, and you have 30 days from delivery to return anything for a full refund.",
@@ -34,8 +38,8 @@ const policies = [
 ] as const;
 
 const contacts = [
-  { icon: "email", label: "Email", value: "support@vega.example", note: "Replies within 24 hours" },
-  { icon: "phone", label: "Phone", value: "+1 (800) 555-0199", note: "Mon–Fri, 8am–8pm" },
+  { icon: "email", label: "Email", value: supportContact.email, note: "Replies within 24 hours" },
+  { icon: "phone", label: "Phone", value: supportContact.phone, note: supportContact.hours },
   { icon: "chat", label: "Live chat", value: "Coming soon", note: "An AI shopping assistant, on every page" },
 ] as const;
 
@@ -56,7 +60,11 @@ export default function SupportPage() {
         </div>
         <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
           {policies.map((p) => (
-            <div key={p.title} className="flex flex-col gap-3 rounded-2xl bg-card p-6">
+            <div
+              key={p.id}
+              id={p.id}
+              className="flex scroll-mt-24 flex-col gap-3 rounded-2xl bg-card p-6"
+            >
               <span className="grid h-11 w-11 place-items-center rounded-xl border border-line text-accent">
                 <SupportIcon name={p.icon} />
               </span>
