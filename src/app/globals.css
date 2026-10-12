@@ -3,6 +3,7 @@
 /* Design tokens — light is default; the toggle sets data-mode="dark". */
 :root,
 [data-mode="light"] {
+  color-scheme: light; /* native controls (dropdowns, search clear) match the theme */
   --bg: #f5f5f7;
   --bg-2: #ffffff;
   --text: #1d1d1f;
@@ -17,6 +18,7 @@
 }
 
 [data-mode="dark"] {
+  color-scheme: dark;
   --bg: #0a0a0c;
   --bg-2: #151517;
   --text: #f5f5f7;

@@ -7,7 +7,7 @@ const links = [
   { label: "Phones", href: "/phones" },
   { label: "Watch", href: "/watch" },
   { label: "Audio", href: "/audio" },
-  { label: "Support", href: "#" },
+  { label: "Support", href: "/support" },
 ];
 
 export default function Nav({
