@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useState, useSyncExternalStore } from "react";
 
 export type CartItem = {
   productSlug: string;
@@ -41,29 +41,53 @@ export function itemKey(item: {
 }
 
 
+// The cart lives in localStorage, outside React. This small store reads and
+// writes it, and tells subscribed components when it changes — including
+// changes made in another tab, so every open tab shows the same cart.
 const STORAGE_KEY = "vega-cart";
+const EMPTY: CartItem[] = [];
+const listeners = new Set<() => void>();
+let cache: CartItem[] | null = null;
+
+function readCart(): CartItem[] {
+  if (cache === null) {
+    try {
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "[]");
+      cache = Array.isArray(saved) ? saved : EMPTY;
+    } catch {
+      cache = EMPTY;
+    }
+  }
+  return cache;
+}
+
+function setItems(update: (prev: CartItem[]) => CartItem[]) {
+  cache = update(readCart());
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(cache));
+  } catch {}
+  listeners.forEach((notify) => notify());
+}
+
+function subscribe(notify: () => void) {
+  const onStorage = (e: StorageEvent) => {
+    if (e.key !== STORAGE_KEY) return;
+    cache = null; // another tab changed the cart — re-read it
+    notify();
+  };
+  listeners.add(notify);
+  window.addEventListener("storage", onStorage);
+  return () => {
+    listeners.delete(notify);
+    window.removeEventListener("storage", onStorage);
+  };
+}
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
-  const [items, setItems] = useState<CartItem[]>([]);
+  // The server has no localStorage, so it renders an empty cart; the browser
+  // then swaps in the saved one without a hydration mismatch.
+  const items = useSyncExternalStore(subscribe, readCart, () => EMPTY);
   const [isOpen, setIsOpen] = useState(false);
-  const [hydrated, setHydrated] = useState(false);
-
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) setItems(JSON.parse(saved));
-    } catch {
-    }
-    setHydrated(true);
-  }, []);
-
-  useEffect(() => {
-    if (!hydrated) return;
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-    } catch {
-    }
-  }, [items, hydrated]);
 
   function addItem(item: NewItem) {
     setItems((prev) => {
@@ -93,7 +117,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }
 
   function clearCart() {
-    setItems([]);
+    setItems(() => []);
   }
 
   const count = items.reduce((sum, i) => sum + i.quantity, 0);
