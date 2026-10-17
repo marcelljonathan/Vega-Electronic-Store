@@ -3,6 +3,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import SignOutButton from "./SignOutButton";
+import { OrderListItem } from "../orders/OrderParts";
+import { ORDER_SELECT, type OrderRow } from "@/lib/orders";
 
 export const metadata: Metadata = {
   title: "My account — Vega",
@@ -18,6 +20,14 @@ export default async function AccountPage() {
   const email = user.email ?? "";
   const fullName: string = user.user_metadata?.full_name || email.split("@")[0];
   const firstName = fullName.split(" ")[0];
+  // The 3 most recent orders (RLS: only this buyer's).
+  const { data: recent } = await supabase
+    .from("orders")
+    .select(ORDER_SELECT)
+    .order("created_at", { ascending: false })
+    .limit(3);
+  const orders = (recent ?? []) as OrderRow[];
+
   const memberSince = new Date(user.created_at).toLocaleDateString("en-GB", {
     month: "long",
     year: "numeric",
@@ -54,14 +64,31 @@ export default async function AccountPage() {
         </section>
 
         <section className="flex flex-col gap-4 rounded-3xl bg-card p-6 sm:p-8">
-          <h2 className="text-lg font-semibold">Orders</h2>
-          <div className="flex flex-1 flex-col items-start justify-center gap-2">
-            <p className="font-semibold">No orders yet.</p>
-            <p className="text-sm text-muted">Orders you place will show up here.</p>
-            <Link href="/" className="mt-2 text-sm font-semibold text-accent">
-              Start shopping →
-            </Link>
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold">Orders</h2>
+            {orders.length > 0 && (
+              <Link href="/orders" className="text-sm font-semibold text-accent">
+                View all orders →
+              </Link>
+            )}
           </div>
+          {orders.length === 0 ? (
+            <div className="flex flex-1 flex-col items-start justify-center gap-2">
+              <p className="font-semibold">No orders yet.</p>
+              <p className="text-sm text-muted">Orders you place will show up here.</p>
+              <Link href="/" className="mt-2 text-sm font-semibold text-accent">
+                Start shopping →
+              </Link>
+            </div>
+          ) : (
+            <ul className="flex flex-col gap-3">
+              {orders.map((order) => (
+                <li key={order.id}>
+                  <OrderListItem order={order} />
+                </li>
+              ))}
+            </ul>
+          )}
         </section>
       </div>
 

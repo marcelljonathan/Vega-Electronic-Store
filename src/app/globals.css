@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* dark: utilities follow the theme toggle, not the OS setting. */
+@custom-variant dark (&:where([data-mode="dark"], [data-mode="dark"] *));
+
 /* Design tokens — light is default; the toggle sets data-mode="dark". */
 :root,
 [data-mode="light"] {

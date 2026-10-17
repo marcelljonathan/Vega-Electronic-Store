@@ -1,5 +1,3 @@
-import type { CartItem } from "@/app/CartProvider";
-
 // All 38 Indonesian provinces, for the shipping address dropdown.
 export const provinces = [
   "Aceh",
@@ -66,19 +64,6 @@ export type Address = {
   postalCode: string;
 };
 
-export type Order = {
-  number: string;
-  placedAt: string;
-  email: string;
-  address: Address;
-  delivery: DeliveryId;
-  payment: PaymentId;
-  items: CartItem[];
-  subtotal: number;
-  shippingFee: number;
-  total: number;
-};
-
 // Accepts "0812…", "812…", "+62 812…" or "62812…" and returns just the
 // digits after +62 ("812…"), which is how Indonesian mobile numbers are stored.
 export function normalizePhone(input: string) {
@@ -93,11 +78,34 @@ export function isValidPhone(input: string) {
   return /^8\d{8,11}$/.test(normalizePhone(input));
 }
 
-// Until the backend exists, the last placed order lives in this tab's
-// sessionStorage so the confirmation page can show it.
-export const LAST_ORDER_KEY = "vega-last-order";
+export type AddressErrors = Partial<Record<keyof Address, string>>;
 
-// A short, readable demo order number like "VG-48213".
-export function createOrderNumber() {
-  return `VG-${Math.floor(10000 + Math.random() * 90000)}`;
+// Checks a shipping address — used by the checkout form and again on the
+// server before an order is saved. An empty object means it's valid.
+export function validateAddress(a: Address): AddressErrors {
+  const errors: AddressErrors = {};
+  if (!a.fullName.trim()) errors.fullName = "Please enter the recipient's name.";
+  if (!isValidPhone(a.phone))
+    errors.phone = "Please enter a valid mobile number, e.g. 812 3456 7890.";
+  if (a.street.trim().length < 5)
+    errors.street = "Please enter the full street address.";
+  if (!provinces.includes(a.province)) errors.province = "Please choose a province.";
+  if (!a.city.trim()) errors.city = "Please enter the city or regency.";
+  if (!a.district.trim()) errors.district = "Please enter the district.";
+  if (!/^\d{5}$/.test(a.postalCode.trim()))
+    errors.postalCode = "Postal codes have 5 digits.";
+  return errors;
+}
+
+// The address as it's saved: trimmed, phone as digits after +62.
+export function cleanAddress(a: Address): Address {
+  return {
+    fullName: a.fullName.trim(),
+    phone: normalizePhone(a.phone),
+    street: a.street.trim(),
+    province: a.province,
+    city: a.city.trim(),
+    district: a.district.trim(),
+    postalCode: a.postalCode.trim(),
+  };
 }
