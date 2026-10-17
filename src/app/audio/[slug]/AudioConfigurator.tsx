@@ -5,6 +5,7 @@ import type { Audio } from "@/lib/audio";
 import { useCart } from "@/app/CartProvider";
 import AudioArt from "../AudioArt";
 import AudioIcon from "../AudioIcon";
+import { formatRupiah } from "@/lib/format";
 
 export default function AudioConfigurator({ item }: { item: Audio }) {
   const [color, setColor] = useState(item.colors[0]);
@@ -77,7 +78,7 @@ export default function AudioConfigurator({ item }: { item: Audio }) {
           {/* Price + Buy */}
           <div className="flex items-center gap-4">
             <span className="text-3xl font-semibold">
-              ${item.price.toLocaleString("en-US")}
+              {formatRupiah(item.price)}
             </span>
             <button
               onClick={handleAdd}

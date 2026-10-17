@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { Phone, SpecIconName } from "@/lib/phones";
 import { useCart } from "@/app/CartProvider";
+import { formatRupiah } from "@/lib/format";
 
 export default function PhoneConfigurator({ phone }: { phone: Phone }) {
   const [color, setColor] = useState(phone.colors[0]);
@@ -102,7 +103,7 @@ export default function PhoneConfigurator({ phone }: { phone: Phone }) {
                     <span className="text-sm text-muted">
                       {s.priceDelta === 0
                         ? "Included"
-                        : `+$${s.priceDelta.toLocaleString("en-US")}`}
+                        : `+${formatRupiah(s.priceDelta)}`}
                     </span>
                   </button>
                 );
@@ -112,7 +113,7 @@ export default function PhoneConfigurator({ phone }: { phone: Phone }) {
 
           <div className="flex items-center gap-4">
             <span className="text-3xl font-semibold">
-              ${price.toLocaleString("en-US")}
+              {formatRupiah(price)}
             </span>
             <button
               onClick={handleAdd}

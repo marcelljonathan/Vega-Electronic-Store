@@ -1,8 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useCart, itemKey, type CartItem } from "./CartProvider";
-import AudioArt from "./audio/AudioArt";
+import { useEffect } from "react";
+import Link from "next/link";
+import { useCart, itemKey } from "./CartProvider";
+import ProductThumb from "./ProductThumb";
+import { formatRupiah } from "@/lib/format";
 
 export default function CartDrawer() {
   const {
@@ -12,9 +14,7 @@ export default function CartDrawer() {
     closeCart,
     updateQuantity,
     removeItem,
-    clearCart,
   } = useCart();
-  const [placed, setPlaced] = useState(false);
 
   // Lock background scrolling while the drawer is open.
   useEffect(() => {
@@ -23,16 +23,6 @@ export default function CartDrawer() {
       document.body.style.overflow = "";
     };
   }, [isOpen]);
-
-  function handleClose() {
-    closeCart();
-    setPlaced(false);
-  }
-
-  function handleCheckout() {
-    clearCart();
-    setPlaced(true);
-  }
 
   return (
     <div
@@ -44,7 +34,7 @@ export default function CartDrawer() {
         className={`absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300 ${
           isOpen ? "opacity-100" : "opacity-0"
         }`}
-        onClick={handleClose}
+        onClick={closeCart}
       />
 
       {/* Panel — slides in from the right */}
@@ -56,7 +46,7 @@ export default function CartDrawer() {
         <div className="flex items-center justify-between border-b border-line p-5">
           <h2 className="text-lg font-semibold">Your cart</h2>
           <button
-            onClick={handleClose}
+            onClick={closeCart}
             aria-label="Close cart"
             className="grid h-8 w-8 place-items-center rounded-full border border-line text-muted transition-colors hover:text-fg"
           >
@@ -64,18 +54,7 @@ export default function CartDrawer() {
           </button>
         </div>
 
-        {placed ? (
-          <div className="flex flex-1 flex-col items-center justify-center gap-3 p-8 text-center">
-            <span className="grid h-12 w-12 place-items-center rounded-full bg-accent text-lg text-white">
-              ✓
-            </span>
-            <span className="text-lg font-semibold">Order placed</span>
-            <span className="max-w-[28ch] text-sm text-muted">
-              Thanks for shopping with Vega. (This is a demo checkout — no
-              payment was taken.)
-            </span>
-          </div>
-        ) : items.length === 0 ? (
+        {items.length === 0 ? (
           <div className="flex flex-1 flex-col items-center justify-center gap-2 p-8 text-center text-muted">
             <span className="text-sm">Your cart is empty.</span>
           </div>
@@ -130,8 +109,7 @@ export default function CartDrawer() {
                       </div>
                     </div>
                     <span className="text-sm font-medium">
-                      $
-                      {(item.unitPrice * item.quantity).toLocaleString("en-US")}
+                      {formatRupiah(item.unitPrice * item.quantity)}
                     </span>
                   </div>
                 );
@@ -142,61 +120,21 @@ export default function CartDrawer() {
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted">Total</span>
                 <span className="text-lg font-semibold">
-                  ${total.toLocaleString("en-US")}
+                  {formatRupiah(total)}
                 </span>
               </div>
-              <button
-                onClick={handleCheckout}
-                className="rounded-full bg-accent px-6 py-3 text-sm font-semibold text-white"
+              <Link
+                href="/checkout"
+                onClick={closeCart}
+                tabIndex={isOpen ? undefined : -1}
+                className="rounded-full bg-accent px-6 py-3 text-center text-sm font-semibold text-white"
               >
                 Checkout
-              </button>
+              </Link>
             </div>
           </>
         )}
       </aside>
-    </div>
-  );
-}
-
-// The right mini placeholder for a cart line, based on its product kind.
-function ProductThumb({ item }: { item: CartItem }) {
-  const style = {
-    "--screen-a": item.screenA,
-    "--screen-b": item.screenB,
-    "--band-a": item.screenA,
-    "--band-b": item.screenB,
-  } as React.CSSProperties;
-
-  if (item.kind === "watch") {
-    return (
-      <div className="watch" data-size="thumb" style={style}>
-        <div className="band" />
-        <div className="case">
-          <div className="face" />
-        </div>
-        <div className="crown" />
-      </div>
-    );
-  }
-
-  if (item.kind === "buds" || item.kind === "headphone") {
-    return (
-      <AudioArt
-        shape={item.kind}
-        size="thumb"
-        a={item.screenA}
-        b={item.screenB}
-      />
-    );
-  }
-
-  return (
-    <div className="device" data-size="thumb" style={style}>
-      <div className="screen">
-        <div className="glare" />
-      </div>
-      <div className="cam" />
     </div>
   );
 }

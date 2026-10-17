@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import type { Watch } from "@/lib/watches";
+import { formatRupiah } from "@/lib/format";
 
 export default function WatchCard({ watch }: { watch: Watch }) {
   const [band, setBand] = useState(watch.bands[0]);
@@ -55,7 +56,7 @@ export default function WatchCard({ watch }: { watch: Watch }) {
       </div>
 
       <span className="text-sm font-semibold text-accent">
-        From ${watch.price.toLocaleString("en-US")}
+        From {formatRupiah(watch.price)}
       </span>
     </div>
   );

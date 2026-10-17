@@ -44,7 +44,8 @@ export function itemKey(item: {
 // The cart lives in localStorage, outside React. This small store reads and
 // writes it, and tells subscribed components when it changes — including
 // changes made in another tab, so every open tab shows the same cart.
-const STORAGE_KEY = "vega-cart";
+// v2: prices became Rupiah, so carts saved with dollar prices are left behind.
+const STORAGE_KEY = "vega-cart-v2";
 const EMPTY: CartItem[] = [];
 const listeners = new Set<() => void>();
 let cache: CartItem[] | null = null;

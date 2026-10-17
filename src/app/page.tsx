@@ -3,6 +3,7 @@ import { phones } from "@/lib/phones";
 import { watches } from "@/lib/watches";
 import { audio } from "@/lib/audio";
 import AudioArt from "./audio/AudioArt";
+import { formatRupiah } from "@/lib/format";
 
 // The hero features the base Vega Ember. Every price and stat on this page
 // is read from the catalog files, so the homepage can't drift out of date.
@@ -100,7 +101,7 @@ export default function Home() {
               href={`/phones/${ember.slug}#configure`}
               className="rounded-full bg-accent px-7.5 py-3.25 text-[0.95rem] font-semibold text-white"
             >
-              Buy from ${ember.price.toLocaleString("en-US")}
+              Buy from {formatRupiah(ember.price)}
             </Link>
             <Link
               href={`/phones/${ember.slug}`}
@@ -171,7 +172,7 @@ export default function Home() {
                 <p className="text-sm text-muted">{c.line}</p>
               </div>
               <span className="text-sm font-semibold text-accent">
-                From ${c.from.toLocaleString("en-US")} · Shop →
+                From {formatRupiah(c.from)} · Shop →
               </span>
             </Link>
           ))}

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import type { Phone } from "@/lib/phones";
+import { formatRupiah } from "@/lib/format";
 
 export default function PhoneCard({ phone }: { phone: Phone }) {
   const [color, setColor] = useState(phone.colors[0]);
@@ -64,7 +65,7 @@ export default function PhoneCard({ phone }: { phone: Phone }) {
       </div>
 
       <span className="text-sm font-semibold text-accent">
-        From ${phone.price.toLocaleString("en-US")}
+        From {formatRupiah(phone.price)}
       </span>
     </div>
   );

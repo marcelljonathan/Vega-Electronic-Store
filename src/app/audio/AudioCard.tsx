@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import type { Audio } from "@/lib/audio";
 import AudioArt from "./AudioArt";
+import { formatRupiah } from "@/lib/format";
 
 export default function AudioCard({ item }: { item: Audio }) {
   const [color, setColor] = useState(item.colors[0]);
@@ -44,7 +45,7 @@ export default function AudioCard({ item }: { item: Audio }) {
       </div>
 
       <span className="text-sm font-semibold text-accent">
-        From ${item.price.toLocaleString("en-US")}
+        From {formatRupiah(item.price)}
       </span>
     </div>
   );

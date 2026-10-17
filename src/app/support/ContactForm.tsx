@@ -4,6 +4,7 @@ import { useState } from "react";
 import { phones } from "@/lib/phones";
 import { watches } from "@/lib/watches";
 import { audio } from "@/lib/audio";
+import { Field, inputClass } from "../FormField";
 
 type Fields = { name: string; email: string; product: string; message: string };
 // Each field may have an error message (or none).
@@ -170,37 +171,4 @@ export default function ContactForm() {
       </div>
     </form>
   );
-}
-
-// A label + control + (optional) error message.
-function Field({
-  id,
-  label,
-  error,
-  children,
-}: {
-  id: string;
-  label: string;
-  error?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="flex flex-col gap-2">
-      <label htmlFor={id} className="text-sm font-semibold">
-        {label}
-      </label>
-      {children}
-      {error && (
-        <span id={`${id}-error`} className="text-sm text-red-500">
-          {error}
-        </span>
-      )}
-    </div>
-  );
-}
-
-function inputClass(hasError: boolean) {
-  return `w-full rounded-xl border bg-bg px-4 py-3 text-sm outline-none transition-colors focus:border-accent ${
-    hasError ? "border-red-500" : "border-line"
-  }`;
 }

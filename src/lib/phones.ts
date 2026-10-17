@@ -168,13 +168,13 @@ export const phones: Phone[] = [
     name: "Vega Spark",
     tier: "Base",
     tagline: "The first light.",
-    price: 249,
+    price: 4_499_000,
     description:
       "Vega's most approachable phone. A bright, dependable display and all-day battery in a light, colorful body.",
     colors: sparkColors,
     storage: [
       { size: "128GB", ram: "6GB", priceDelta: 0 },
-      { size: "256GB", ram: "8GB", priceDelta: 50 },
+      { size: "256GB", ram: "8GB", priceDelta: 900_000 },
     ],
     keySpecs: [
       { icon: "display", label: "Display", value: '6.1" OLED' },
@@ -219,14 +219,14 @@ export const phones: Phone[] = [
     name: "Vega Spark Plus",
     tier: "Plus",
     tagline: "More light, more life.",
-    price: 329,
+    price: 5_899_000,
     bestValue: true,
     description:
       "The Spark, with room to spare — more storage and memory for a phone that keeps up with a busy day.",
     colors: sparkColors,
     storage: [
       { size: "256GB", ram: "8GB", priceDelta: 0 },
-      { size: "512GB", ram: "8GB", priceDelta: 80 },
+      { size: "512GB", ram: "8GB", priceDelta: 1_400_000 },
     ],
     keySpecs: [
       { icon: "display", label: "Display", value: '6.1" OLED' },
@@ -271,13 +271,13 @@ export const phones: Phone[] = [
     name: "Vega Spark Pro",
     tier: "Pro",
     tagline: "Spark, elevated.",
-    price: 399,
+    price: 7_199_000,
     description:
       "The top Spark — a faster chip and a triple camera bring flagship touches to the entry line.",
     colors: sparkColors,
     storage: [
       { size: "256GB", ram: "8GB", priceDelta: 0 },
-      { size: "512GB", ram: "8GB", priceDelta: 80 },
+      { size: "512GB", ram: "8GB", priceDelta: 1_400_000 },
     ],
     keySpecs: [
       { icon: "display", label: "Display", value: '6.1" OLED' },
@@ -324,13 +324,13 @@ export const phones: Phone[] = [
     name: "Vega Lumen",
     tier: "Base",
     tagline: "Everyday brilliance.",
-    price: 449,
+    price: 8_099_000,
     description:
       "The everyday flagship. A brilliant 120Hz display and a fast chip, balanced for most people.",
     colors: lumenColors,
     storage: [
       { size: "128GB", ram: "8GB", priceDelta: 0 },
-      { size: "256GB", ram: "8GB", priceDelta: 60 },
+      { size: "256GB", ram: "8GB", priceDelta: 1_100_000 },
     ],
     keySpecs: [
       { icon: "display", label: "Display", value: '6.4" OLED' },
@@ -375,14 +375,14 @@ export const phones: Phone[] = [
     name: "Vega Lumen Plus",
     tier: "Plus",
     tagline: "Brilliance, extended.",
-    price: 549,
+    price: 9_899_000,
     bestValue: true,
     description:
       "More storage and a sharper camera tune — the Lumen most people should buy.",
     colors: lumenColors,
     storage: [
       { size: "256GB", ram: "8GB", priceDelta: 0 },
-      { size: "512GB", ram: "12GB", priceDelta: 100 },
+      { size: "512GB", ram: "12GB", priceDelta: 1_800_000 },
     ],
     keySpecs: [
       { icon: "display", label: "Display", value: '6.4" OLED' },
@@ -427,13 +427,13 @@ export const phones: Phone[] = [
     name: "Vega Lumen Pro",
     tier: "Pro",
     tagline: "The bright standard, perfected.",
-    price: 649,
+    price: 11_699_000,
     description:
       "A triple camera, more memory, and generous storage — the Lumen at its fullest.",
     colors: lumenColors,
     storage: [
       { size: "512GB", ram: "12GB", priceDelta: 0 },
-      { size: "1TB", ram: "12GB", priceDelta: 150 },
+      { size: "1TB", ram: "12GB", priceDelta: 2_700_000 },
     ],
     keySpecs: [
       { icon: "display", label: "Display", value: '6.4" OLED' },
@@ -480,13 +480,13 @@ export const phones: Phone[] = [
     name: "Vega Ember",
     tier: "Base",
     tagline: "Made to glow.",
-    price: 799,
+    price: 14_399_000,
     description:
       "A brilliant 2,000-nit display that comes alive in your hand, with pro cameras to match.",
     colors: emberColors,
     storage: [
       { size: "256GB", ram: "8GB", priceDelta: 0 },
-      { size: "512GB", ram: "12GB", priceDelta: 120 },
+      { size: "512GB", ram: "12GB", priceDelta: 2_200_000 },
     ],
     keySpecs: [
       { icon: "display", label: "Display", value: '6.7" OLED' },
@@ -531,14 +531,14 @@ export const phones: Phone[] = [
     name: "Vega Ember Plus",
     tier: "Plus",
     tagline: "Glow, amplified.",
-    price: 899,
+    price: 16_199_000,
     bestValue: true,
     description:
       "More memory for heavier days, plus the full Ember display and camera experience.",
     colors: emberColors,
     storage: [
       { size: "256GB", ram: "12GB", priceDelta: 0 },
-      { size: "512GB", ram: "12GB", priceDelta: 100 },
+      { size: "512GB", ram: "12GB", priceDelta: 1_800_000 },
     ],
     keySpecs: [
       { icon: "display", label: "Display", value: '6.7" OLED' },
@@ -583,13 +583,13 @@ export const phones: Phone[] = [
     name: "Vega Ember Pro",
     tier: "Pro",
     tagline: "Ember, at full power.",
-    price: 1099,
+    price: 19_799_000,
     description:
       "A telephoto camera, more storage, and the fastest Ember chip — pro photography, redefined.",
     colors: emberColors,
     storage: [
       { size: "512GB", ram: "12GB", priceDelta: 0 },
-      { size: "1TB", ram: "16GB", priceDelta: 200 },
+      { size: "1TB", ram: "16GB", priceDelta: 3_600_000 },
     ],
     keySpecs: [
       { icon: "display", label: "Display", value: '6.7" OLED' },
@@ -636,13 +636,13 @@ export const phones: Phone[] = [
     name: "Vega Halo",
     tier: "Base",
     tagline: "Radiance, perfected.",
-    price: 1099,
+    price: 19_799_000,
     description:
       "The most advanced Vega display and camera system in a titanium body — light, perfected.",
     colors: haloColors,
     storage: [
       { size: "256GB", ram: "12GB", priceDelta: 0 },
-      { size: "512GB", ram: "16GB", priceDelta: 150 },
+      { size: "512GB", ram: "16GB", priceDelta: 2_700_000 },
     ],
     keySpecs: [
       { icon: "display", label: "Display", value: '6.9" OLED' },
@@ -687,14 +687,14 @@ export const phones: Phone[] = [
     name: "Vega Halo Plus",
     tier: "Plus",
     tagline: "Radiance, without limits.",
-    price: 1299,
+    price: 23_399_000,
     bestValue: true,
     description:
       "More storage and 16GB of memory for the most demanding days — the Halo, unleashed.",
     colors: haloColors,
     storage: [
       { size: "512GB", ram: "16GB", priceDelta: 0 },
-      { size: "1TB", ram: "16GB", priceDelta: 200 },
+      { size: "1TB", ram: "16GB", priceDelta: 3_600_000 },
     ],
     keySpecs: [
       { icon: "display", label: "Display", value: '6.9" OLED' },
@@ -739,13 +739,13 @@ export const phones: Phone[] = [
     name: "Vega Halo Pro",
     tier: "Pro",
     tagline: "The pinnacle of Vega.",
-    price: 1499,
+    price: 26_999_000,
     description:
       "1TB of storage, a telephoto camera, and the fastest Vega chip ever. Nothing sits above it.",
     colors: haloColors,
     storage: [
       { size: "1TB", ram: "16GB", priceDelta: 0 },
-      { size: "2TB", ram: "16GB", priceDelta: 300 },
+      { size: "2TB", ram: "16GB", priceDelta: 5_400_000 },
     ],
     keySpecs: [
       { icon: "display", label: "Display", value: '6.9" OLED' },

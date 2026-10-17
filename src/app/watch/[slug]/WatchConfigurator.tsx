@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { Watch, WatchIconName } from "@/lib/watches";
 import { useCart } from "@/app/CartProvider";
+import { formatRupiah } from "@/lib/format";
 
 export default function WatchConfigurator({ watch }: { watch: Watch }) {
   const [band, setBand] = useState(watch.bands[0]);
@@ -105,7 +106,7 @@ export default function WatchConfigurator({ watch }: { watch: Watch }) {
                     <span className="text-sm text-muted">
                       {s.priceDelta === 0
                         ? "Included"
-                        : `+$${s.priceDelta.toLocaleString("en-US")}`}
+                        : `+${formatRupiah(s.priceDelta)}`}
                     </span>
                   </button>
                 );
@@ -116,7 +117,7 @@ export default function WatchConfigurator({ watch }: { watch: Watch }) {
           {/* Price + Buy */}
           <div className="flex items-center gap-4">
             <span className="text-3xl font-semibold">
-              ${price.toLocaleString("en-US")}
+              {formatRupiah(price)}
             </span>
             <button
               onClick={handleAdd}

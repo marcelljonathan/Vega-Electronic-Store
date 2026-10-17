@@ -114,7 +114,7 @@ export const faqs: Faq[] = [
     category: "orders",
     question: "How long does shipping take?",
     answer:
-      "Shipping is free on every order. Orders usually leave our warehouse within 1 business day and arrive in 3–5 business days. You'll get an email with a tracking link as soon as yours ships.",
+      "Standard shipping is free on every order and arrives in 3–5 business days. In a hurry? Express shipping arrives in 1–2 business days for a flat Rp 50.000. Orders usually leave our warehouse within 1 business day, and you'll get an email with a tracking link as soon as yours ships.",
   },
   {
     id: "orders-returns",

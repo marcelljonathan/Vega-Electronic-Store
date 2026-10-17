@@ -35,7 +35,7 @@ export const watches: Watch[] = [
     slug: "pulse",
     name: "Vega Pulse",
     tagline: "Your day, on your wrist.",
-    price: 99,
+    price: 1_799_000,
     description:
       "The essential Vega watch — a bright always-on display, full health tracking, and multi-day battery in a light aluminium body.",
     bands: [
@@ -45,7 +45,7 @@ export const watches: Watch[] = [
     ],
     sizes: [
       { label: "41mm", priceDelta: 0 },
-      { label: "45mm", priceDelta: 30 },
+      { label: "45mm", priceDelta: 500_000 },
     ],
     keySpecs: [
       { icon: "display", label: "Display", value: '1.4" AMOLED' },
@@ -117,7 +117,7 @@ export const watches: Watch[] = [
     slug: "pulse-pro",
     name: "Vega Pulse Pro",
     tagline: "The pinnacle, on your wrist.",
-    price: 199,
+    price: 3_599_000,
     description:
       "A titanium body, a brighter LTPO display, ECG and advanced sensors, and the longest battery in the line.",
     bands: [
@@ -127,7 +127,7 @@ export const watches: Watch[] = [
     ],
     sizes: [
       { label: "45mm", priceDelta: 0 },
-      { label: "49mm", priceDelta: 50 },
+      { label: "49mm", priceDelta: 900_000 },
     ],
     keySpecs: [
       { icon: "display", label: "Display", value: '1.5" LTPO' },
@@ -200,7 +200,7 @@ export const watches: Watch[] = [
     slug: "move",
     name: "Vega Move",
     tagline: "Built to go the distance.",
-    price: 139,
+    price: 2_499_000,
     description:
       "The sport watch — dual-band GPS, a rugged reinforced body, and training metrics for every workout.",
     bands: [
@@ -210,7 +210,7 @@ export const watches: Watch[] = [
     ],
     sizes: [
       { label: "43mm", priceDelta: 0 },
-      { label: "47mm", priceDelta: 30 },
+      { label: "47mm", priceDelta: 500_000 },
     ],
     keySpecs: [
       { icon: "display", label: "Display", value: '1.4" AMOLED' },

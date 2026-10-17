@@ -34,7 +34,7 @@ export const audio: Audio[] = [
     slug: "beam",
     name: "Vega Beam",
     tagline: "Everyday sound, untethered.",
-    price: 59,
+    price: 1_099_000,
     description:
       "The essential Vega earbuds — custom 12mm drivers, a full day of battery with the case, and a snug, sweatproof fit.",
     shape: "buds",
@@ -103,7 +103,7 @@ export const audio: Audio[] = [
     slug: "beam-pro",
     name: "Vega Beam Pro",
     tagline: "Silence, then everything.",
-    price: 109,
+    price: 1_999_000,
     description:
       "Adaptive noise cancellation, spatial audio, and Hi-Res sound in a compact bud — the flagship of the Beam line.",
     shape: "buds",
@@ -177,7 +177,7 @@ export const audio: Audio[] = [
     slug: "aura",
     name: "Vega Aura",
     tagline: "Your studio, anywhere.",
-    price: 159,
+    price: 2_899_000,
     description:
       "Over-ear headphones with immersive noise cancellation, 40mm drivers, spatial audio, and 40-hour battery in a plush, foldable body.",
     shape: "headphone",
