@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useCart } from "./CartProvider";
+import { useAuth } from "./AuthProvider";
 
 type Mode = "light" | "dark";
 
@@ -19,6 +20,7 @@ export default function Nav({
   setMode: (m: Mode) => void;
 }) {
   const { count, openCart } = useCart();
+  const { user, ready } = useAuth();
   const hidden = useHideOnScroll();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuButton = useRef<HTMLButtonElement>(null);
@@ -102,6 +104,20 @@ export default function Nav({
                 </span>
               )}
             </button>
+            {/* Signed in: initial → My account. Signed out: person icon → Sign in.
+                Until the session is known, link to /account (it redirects if needed). */}
+            <Link
+              href={user || !ready ? "/account" : "/signin"}
+              onClick={closeMenu}
+              aria-label={user ? "My account" : "Sign in"}
+              className={`grid h-9 w-9 place-items-center rounded-full text-sm font-semibold transition-colors ${
+                user
+                  ? "bg-accent text-white"
+                  : "border border-line text-muted hover:text-fg"
+              }`}
+            >
+              {user ? user.fullName.charAt(0).toUpperCase() : <PersonIcon />}
+            </Link>
             {/* Mobile menu toggle — phones only */}
             <button
               ref={menuButton}
@@ -127,7 +143,7 @@ export default function Nav({
         >
           <ul className="mx-auto flex max-w-280 flex-col px-7 py-3">
             {links.map((link) => (
-              <li key={link.label} className="border-b border-line last:border-b-0">
+              <li key={link.label} className="border-b border-line">
                 <Link
                   href={link.href}
                   onClick={closeMenu}
@@ -140,6 +156,16 @@ export default function Nav({
                 </Link>
               </li>
             ))}
+            <li>
+              <Link
+                href={user ? "/account" : "/signin"}
+                onClick={closeMenu}
+                className="flex items-center justify-between py-4 text-lg font-medium text-muted"
+              >
+                {user ? "My account" : "Sign in"}
+                <span aria-hidden="true">→</span>
+              </Link>
+            </li>
           </ul>
         </div>
       </nav>
@@ -256,6 +282,25 @@ function CloseIcon() {
     >
       <line x1="6" y1="6" x2="18" y2="18" />
       <line x1="18" y1="6" x2="6" y2="18" />
+    </svg>
+  );
+}
+
+function PersonIcon() {
+  return (
+    <svg
+      width="17"
+      height="17"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <circle cx="12" cy="8" r="4" />
+      <path d="M4 21a8 8 0 0 1 16 0" />
     </svg>
   );
 }

@@ -1,6 +1,15 @@
 "use client";
 
-import { createContext, useContext, useState, useSyncExternalStore } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
+import { createClient } from "@/lib/supabase/client";
+import { useAuth } from "./AuthProvider";
 
 export type CartItem = {
   productSlug: string;
@@ -62,12 +71,71 @@ function readCart(): CartItem[] {
   return cache;
 }
 
-function setItems(update: (prev: CartItem[]) => CartItem[]) {
-  cache = update(readCart());
+// Replaces the cart in this browser only (no account save).
+function replaceLocal(items: CartItem[]) {
+  cache = items;
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(cache));
   } catch {}
   listeners.forEach((notify) => notify());
+}
+
+// Every cart change goes through here: saved in the browser, and also to the
+// account when someone is signed in.
+function setItems(update: (prev: CartItem[]) => CartItem[]) {
+  replaceLocal(update(readCart()));
+  if (syncUserId) saveToAccount(syncUserId);
+}
+
+// ----- Account sync -----
+// While signed in, the cart is also kept in Supabase (table "carts"), so it
+// follows the user to other devices.
+let syncUserId: string | null = null;
+let latestUserId: string | null = null; // who is signed in right now
+let loadingFor: string | null = null; // avoids loading the same cart twice at once
+let mergeOnSignIn = false;
+let saveQueue = Promise.resolve();
+
+// Called by the sign-in / sign-up forms: the guest cart in this browser
+// should be added to the account's cart once the sign-in completes.
+export function mergeGuestCartOnSignIn() {
+  mergeOnSignIn = true;
+}
+
+// Saves run one after another, always sending the latest cart.
+function saveToAccount(userId: string) {
+  saveQueue = saveQueue.then(async () => {
+    const { error } = await createClient()
+      .from("carts")
+      .upsert({
+        user_id: userId,
+        items: readCart(),
+        updated_at: new Date().toISOString(),
+      });
+    if (error) console.error("Could not save the cart to your account:", error.message);
+  });
+}
+
+async function loadAccountCart(userId: string) {
+  const { data, error } = await createClient()
+    .from("carts")
+    .select("items")
+    .eq("user_id", userId)
+    .maybeSingle();
+  if (error) throw error;
+  return Array.isArray(data?.items) ? (data.items as CartItem[]) : EMPTY;
+}
+
+// Adds the guest items into the account cart; the same product/color/option
+// becomes one line with the quantities added together.
+function mergeCarts(account: CartItem[], guest: CartItem[]) {
+  const merged = account.map((i) => ({ ...i }));
+  for (const g of guest) {
+    const match = merged.find((m) => itemKey(m) === itemKey(g));
+    if (match) match.quantity += g.quantity;
+    else merged.push({ ...g });
+  }
+  return merged;
 }
 
 function subscribe(notify: () => void) {
@@ -89,6 +157,53 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   // then swaps in the saved one without a hydration mismatch.
   const items = useSyncExternalStore(subscribe, readCart, () => EMPTY);
   const [isOpen, setIsOpen] = useState(false);
+  const { user, ready } = useAuth();
+  const userId = user?.id ?? null;
+  const firstCheck = useRef(true);
+
+  // React to sign-in and sign-out:
+  // - page load while signed in → show the account's saved cart
+  // - signing in here → add the guest cart into the account cart
+  // - signed in from another tab → that tab updates the shared cart, nothing to do
+  // - signing out → empty the cart on this device (it stays in the account)
+  useEffect(() => {
+    if (!ready) return;
+    latestUserId = userId;
+    const isPageLoad = firstCheck.current;
+    firstCheck.current = false;
+    if (userId === syncUserId) return;
+
+    if (!userId) {
+      syncUserId = null;
+      mergeOnSignIn = false;
+      replaceLocal(EMPTY);
+      return;
+    }
+    if (!isPageLoad && !mergeOnSignIn) {
+      syncUserId = userId;
+      return;
+    }
+
+    if (loadingFor === userId) return;
+    loadingFor = userId;
+    loadAccountCart(userId)
+      .then((account) => {
+        if (latestUserId !== userId) return; // signed out while loading
+        syncUserId = userId;
+        if (mergeOnSignIn) {
+          mergeOnSignIn = false;
+          setItems(() => mergeCarts(account, readCart()));
+        } else {
+          replaceLocal(account);
+        }
+      })
+      .catch((error) =>
+        console.error("Could not load the cart from your account:", error.message),
+      )
+      .finally(() => {
+        loadingFor = null;
+      });
+  }, [ready, userId]);
 
   function addItem(item: NewItem) {
     setItems((prev) => {
