@@ -1,108 +1,105 @@
 "use client";
 
 import { useState } from "react";
-import type { Watch, WatchIconName } from "@/lib/watches";
-import { useCart } from "@/app/CartProvider";
+import type { Phone, SpecIconName } from "@/lib/phones";
+import { useCart } from "@/app/(store)/CartProvider";
 import { formatRupiah } from "@/lib/format";
 
-export default function WatchConfigurator({ watch }: { watch: Watch }) {
-  const [band, setBand] = useState(watch.bands[0]);
-  const [size, setSize] = useState(watch.sizes[0]);
+export default function PhoneConfigurator({ phone }: { phone: Phone }) {
+  const [color, setColor] = useState(phone.colors[0]);
+  const [storage, setStorage] = useState(phone.storage[0]);
   const [specsOpen, setSpecsOpen] = useState(false);
 
-  const price = watch.price + size.priceDelta;
-
+  const price = phone.price + storage.priceDelta;
   const { addItem, openCart } = useCart();
 
   function handleAdd() {
     addItem({
-      productSlug: watch.slug,
-      kind: "watch",
-      name: watch.name,
-      colorName: band.name,
-      screenA: band.bandA,
-      screenB: band.bandB,
-      option: size.label,
+      productSlug: phone.slug,
+      kind: "phone",
+      name: phone.name,
+      colorName: color.name,
+      screenA: color.screenA,
+      screenB: color.screenB,
+      option: `${storage.size} · ${storage.ram} RAM`,
       unitPrice: price,
     });
     openCart();
   }
 
   return (
-    <section className="mt-16 border-t border-line pt-14">
+    <section id="configure" className="mt-16 scroll-mt-24 border-t border-line pt-14">
       <div className="flex flex-col items-center gap-2 pb-10 text-center">
         <span className="text-xs font-bold uppercase tracking-[0.24em] text-muted">
           Make it yours
         </span>
         <h2 className="text-balance text-3xl font-medium tracking-tight sm:text-4xl">
-          Configure your {watch.name}
+          Configure your {phone.name}
         </h2>
       </div>
 
       <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
-        {/* Left: watch picture */}
         <div className="flex flex-col items-center justify-center">
           <div className="relative grid w-full place-items-center py-6">
             <div className="glow-layer" />
             <div
-              className="watch"
+              className="device"
               style={
                 {
-                  "--band-a": band.bandA,
-                  "--band-b": band.bandB,
+                  "--screen-a": color.screenA,
+                  "--screen-b": color.screenB,
                 } as React.CSSProperties
               }
             >
-              <div className="band" />
-              <div className="case">
-                <div className="face" />
+              <div className="screen">
+                <div className="glare" />
               </div>
-              <div className="crown" />
+              <div className="cam" />
             </div>
           </div>
         </div>
 
-        {/* Right: options + price + key specs */}
         <div className="flex flex-col gap-8">
-          {/* Band */}
           <div className="flex flex-col gap-3">
             <span className="text-sm font-semibold">
-              Band — <span className="font-normal text-muted">{band.name}</span>
+              Color —{" "}
+              <span className="font-normal text-muted">{color.name}</span>
             </span>
             <div className="flex gap-3">
-              {watch.bands.map((b) => (
+              {phone.colors.map((c) => (
                 <button
-                  key={b.name}
-                  onClick={() => setBand(b)}
-                  aria-label={b.name}
+                  key={c.name}
+                  onClick={() => setColor(c)}
+                  aria-label={c.name}
                   className={`h-9 w-9 rounded-full border-2 transition-transform hover:scale-110 ${
-                    b.name === band.name ? "border-accent" : "border-line"
+                    c.name === color.name ? "border-accent" : "border-line"
                   }`}
                   style={{
-                    background: `linear-gradient(135deg, ${b.bandA}, ${b.bandB})`,
+                    background: `linear-gradient(135deg, ${c.screenA}, ${c.screenB})`,
                   }}
                 />
               ))}
             </div>
           </div>
 
-          {/* Case size */}
           <div className="flex flex-col gap-3">
-            <span className="text-sm font-semibold">Case size</span>
+            <span className="text-sm font-semibold">Storage & memory</span>
             <div className="flex flex-col gap-2">
-              {watch.sizes.map((s) => {
-                const selected = s.label === size.label;
+              {phone.storage.map((s) => {
+                const selected = s.size === storage.size;
                 return (
                   <button
-                    key={s.label}
-                    onClick={() => setSize(s)}
+                    key={s.size}
+                    onClick={() => setStorage(s)}
                     className={`flex items-center justify-between rounded-xl border px-4 py-3 text-left transition-colors ${
                       selected
                         ? "border-accent"
                         : "border-line hover:border-muted"
                     }`}
                   >
-                    <span className="text-sm font-medium">{s.label}</span>
+                    <span className="text-sm font-medium">
+                      {s.size} · {s.ram} RAM
+                    </span>
                     <span className="text-sm text-muted">
                       {s.priceDelta === 0
                         ? "Included"
@@ -114,7 +111,6 @@ export default function WatchConfigurator({ watch }: { watch: Watch }) {
             </div>
           </div>
 
-          {/* Price + Buy */}
           <div className="flex items-center gap-4">
             <span className="text-3xl font-semibold">
               {formatRupiah(price)}
@@ -127,12 +123,11 @@ export default function WatchConfigurator({ watch }: { watch: Watch }) {
             </button>
           </div>
 
-          {/* Key specs */}
           <div className="flex flex-col gap-4 border-t border-line pt-6">
-            {watch.keySpecs.map((spec) => (
+            {phone.keySpecs.map((spec) => (
               <div key={spec.label} className="flex items-center gap-4">
                 <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-line">
-                  <WatchIcon name={spec.icon} />
+                  <SpecIcon name={spec.icon} />
                 </span>
                 <div className="flex flex-col">
                   <span className="text-xs text-muted">{spec.label}</span>
@@ -149,7 +144,6 @@ export default function WatchConfigurator({ watch }: { watch: Watch }) {
           </div>
         </div>
 
-        {/* Full specifications modal */}
         {specsOpen && (
           <div
             className="fixed inset-0 z-100 flex items-center justify-center p-4"
@@ -171,7 +165,7 @@ export default function WatchConfigurator({ watch }: { watch: Watch }) {
                 </button>
               </div>
               <div className="flex flex-col gap-6">
-                {watch.specGroups.map((group) => (
+                {phone.specGroups.map((group) => (
                   <div key={group.group} className="flex flex-col gap-1">
                     <span className="pb-1 text-sm font-semibold text-accent">
                       {group.group}
@@ -198,7 +192,7 @@ export default function WatchConfigurator({ watch }: { watch: Watch }) {
   );
 }
 
-function WatchIcon({ name }: { name: WatchIconName }) {
+function SpecIcon({ name }: { name: SpecIconName }) {
   const common = {
     width: 18,
     height: 18,
@@ -214,8 +208,16 @@ function WatchIcon({ name }: { name: WatchIconName }) {
   if (name === "display") {
     return (
       <svg {...common}>
-        <rect x="5.5" y="5.5" width="13" height="13" rx="4" />
-        <circle cx="12" cy="12" r="2.4" />
+        <rect x="7" y="2.5" width="10" height="19" rx="2.5" />
+        <line x1="10.5" y1="18.5" x2="13.5" y2="18.5" />
+      </svg>
+    );
+  }
+  if (name === "camera") {
+    return (
+      <svg {...common}>
+        <path d="M4 8.5h2.6l1.2-1.9h8.4l1.2 1.9H20a1.5 1.5 0 0 1 1.5 1.5v7.5A1.5 1.5 0 0 1 20 19H4a1.5 1.5 0 0 1-1.5-1.5V10A1.5 1.5 0 0 1 4 8.5z" />
+        <circle cx="12" cy="13.5" r="3.1" />
       </svg>
     );
   }
@@ -228,17 +230,11 @@ function WatchIcon({ name }: { name: WatchIconName }) {
       </svg>
     );
   }
-  if (name === "health") {
-    return (
-      <svg {...common}>
-        <path d="M20.4 8.6a4.6 4.6 0 0 0-8.4-2.5 4.6 4.6 0 0 0-8.4 2.5c0 3.4 3.1 6 8.4 10 5.3-4 8.4-6.6 8.4-10z" />
-      </svg>
-    );
-  }
-  // water
+
   return (
     <svg {...common}>
-      <path d="M12 3.2s6 6.4 6 10.8a6 6 0 0 1-12 0c0-4.4 6-10.8 6-10.8z" />
+      <rect x="7.5" y="7.5" width="9" height="9" rx="1.5" />
+      <path d="M10 4v3.5M14 4v3.5M10 16.5V20M14 16.5V20M4 10h3.5M4 14h3.5M16.5 10H20M16.5 14H20" />
     </svg>
   );
 }

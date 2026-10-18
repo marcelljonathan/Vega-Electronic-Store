@@ -20,10 +20,11 @@ export default async function AccountPage() {
   const email = user.email ?? "";
   const fullName: string = user.user_metadata?.full_name || email.split("@")[0];
   const firstName = fullName.split(" ")[0];
-  // The 3 most recent orders (RLS: only this buyer's).
+  // This buyer's 3 most recent orders.
   const { data: recent } = await supabase
     .from("orders")
     .select(ORDER_SELECT)
+    .eq("user_id", user.id)
     .order("created_at", { ascending: false })
     .limit(3);
   const orders = (recent ?? []) as OrderRow[];

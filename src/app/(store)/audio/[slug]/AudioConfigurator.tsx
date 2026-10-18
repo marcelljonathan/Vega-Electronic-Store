@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import type { Audio } from "@/lib/audio";
-import { useCart } from "@/app/CartProvider";
+import { useCart } from "@/app/(store)/CartProvider";
 import AudioArt from "../AudioArt";
 import AudioIcon from "../AudioIcon";
 import { formatRupiah } from "@/lib/format";

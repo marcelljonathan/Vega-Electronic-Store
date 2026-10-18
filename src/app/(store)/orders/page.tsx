@@ -16,10 +16,12 @@ export default async function OrdersPage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/signin?next=/orders");
 
-  // RLS returns only this buyer's orders.
+  // Only this buyer's own orders. (RLS would also allow an admin to see
+  // everyone's — the store must still ask for "mine".)
   const { data } = await supabase
     .from("orders")
     .select(ORDER_SELECT)
+    .eq("user_id", user.id)
     .order("created_at", { ascending: false });
   const orders = (data ?? []) as OrderRow[];
 

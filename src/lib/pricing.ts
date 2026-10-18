@@ -1,4 +1,4 @@
-import type { CartItem } from "@/app/CartProvider";
+import type { CartItem } from "@/app/(store)/CartProvider";
 import { phones } from "./phones";
 import { watches } from "./watches";
 import { audio } from "./audio";

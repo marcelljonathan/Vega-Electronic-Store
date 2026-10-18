@@ -1,4 +1,4 @@
-import type { CartItem } from "@/app/CartProvider";
+import type { CartItem } from "@/app/(store)/CartProvider";
 import type { Address, DeliveryId, PaymentId } from "./checkout";
 
 export type OrderStatus = "processing" | "shipped" | "delivered" | "cancelled";
@@ -29,6 +29,10 @@ export type OrderRow = {
   shipping_fee: number;
   total: number;
   created_at: string;
+  updated_at: string;
+  shipped_at: string | null;
+  delivered_at: string | null;
+  cancelled_at: string | null;
   order_items: OrderItemRow[];
 };
 
@@ -58,6 +62,22 @@ export const orderStatuses: Record<
   },
 };
 
+// Which status an order can move to next, and the admin button for it.
+// Delivered and cancelled orders are finished.
+export const nextStatuses: Record<OrderStatus, OrderStatus[]> = {
+  processing: ["shipped", "cancelled"],
+  shipped: ["delivered", "cancelled"],
+  delivered: [],
+  cancelled: [],
+};
+
+export const statusActionLabels: Record<OrderStatus, string> = {
+  processing: "Mark as processing",
+  shipped: "Mark as shipped",
+  delivered: "Mark as delivered",
+  cancelled: "Cancel order",
+};
+
 // An order line in the shape ProductThumb and the cart already use.
 export function toCartItem(row: OrderItemRow): CartItem {
   return {
@@ -83,6 +103,15 @@ export function formatOrderDate(iso: string, month: "long" | "short" = "long") {
     day: "numeric",
     month,
     year: "numeric",
+    timeZone: "Asia/Jakarta",
+  });
+}
+
+// "18 Oct" — for the status tracker.
+export function formatDayMonth(iso: string) {
+  return new Date(iso).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
     timeZone: "Asia/Jakarta",
   });
 }
