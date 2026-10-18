@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { phones } from "@/lib/phones";
+import { getPhones, getPhone } from "@/lib/catalog";
 import PhoneConfigurator from "./PhoneConfigurator";
 import PhoneFeatures from "./PhoneFeatures";
 
-export function generateStaticParams() {
-  return phones.map((phone) => ({ slug: phone.slug }));
+export async function generateStaticParams() {
+  return (await getPhones()).map((phone) => ({ slug: phone.slug }));
 }
 
 export async function generateMetadata({
@@ -15,7 +15,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const phone = phones.find((p) => p.slug === slug);
+  const phone = await getPhone(slug);
   if (!phone) return { title: "Phone not found — Vega" };
   return { title: `${phone.name} — Vega`, description: phone.description };
 }
@@ -26,7 +26,7 @@ export default async function PhoneDetail({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const phone = phones.find((p) => p.slug === slug);
+  const phone = await getPhone(slug);
   if (!phone) notFound();
 
   return (

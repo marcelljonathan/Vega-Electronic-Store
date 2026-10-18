@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { watches } from "@/lib/watches";
+import { getWatches, getWatch } from "@/lib/catalog";
 import WatchConfigurator from "./WatchConfigurator";
 import WatchFeatures from "./WatchFeatures";
 
-export function generateStaticParams() {
-  return watches.map((watch) => ({ slug: watch.slug }));
+export async function generateStaticParams() {
+  return (await getWatches()).map((watch) => ({ slug: watch.slug }));
 }
 
 export async function generateMetadata({
@@ -15,7 +15,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const watch = watches.find((w) => w.slug === slug);
+  const watch = await getWatch(slug);
   if (!watch) return { title: "Watch not found — Vega" };
   return { title: `${watch.name} — Vega`, description: watch.description };
 }
@@ -26,7 +26,7 @@ export default async function WatchDetail({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const watch = watches.find((w) => w.slug === slug);
+  const watch = await getWatch(slug);
   if (!watch) notFound();
 
   return (

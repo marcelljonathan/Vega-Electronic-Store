@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { audio } from "@/lib/audio";
+import { getAudio } from "@/lib/catalog";
 import AudioCard from "./AudioCard";
 
 export const metadata: Metadata = {
@@ -7,7 +7,8 @@ export const metadata: Metadata = {
   description: "The Vega audio line — earbuds and headphones, made to glow.",
 };
 
-export default function AudioPage() {
+export default async function AudioPage() {
+  const audio = await getAudio();
   return (
     <div className="mx-auto max-w-280 px-7 py-16">
       <header className="flex flex-col items-center gap-3 pb-14 text-center">

@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { audio } from "@/lib/audio";
+import { getAudio, getAudioItem } from "@/lib/catalog";
 import AudioConfigurator from "./AudioConfigurator";
 import AudioFeatures from "./AudioFeatures";
 
-export function generateStaticParams() {
-  return audio.map((item) => ({ slug: item.slug }));
+export async function generateStaticParams() {
+  return (await getAudio()).map((item) => ({ slug: item.slug }));
 }
 
 export async function generateMetadata({
@@ -15,7 +15,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const item = audio.find((a) => a.slug === slug);
+  const item = await getAudioItem(slug);
   if (!item) return { title: "Audio not found — Vega" };
   return { title: `${item.name} — Vega`, description: item.description };
 }
@@ -26,7 +26,7 @@ export default async function AudioDetail({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const item = audio.find((a) => a.slug === slug);
+  const item = await getAudioItem(slug);
   if (!item) notFound();
 
   return (

@@ -82,9 +82,10 @@ export default function AudioConfigurator({ item }: { item: Audio }) {
             </span>
             <button
               onClick={handleAdd}
-              className="rounded-full bg-accent px-7 py-3 text-sm font-semibold text-white"
+              disabled={!item.available}
+              className="rounded-full bg-accent px-7 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:bg-line disabled:text-muted"
             >
-              Add to cart
+              {item.available ? "Add to cart" : "Sold out"}
             </button>
           </div>
 

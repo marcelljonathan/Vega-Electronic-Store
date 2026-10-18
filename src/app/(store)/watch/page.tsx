@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { watches } from "@/lib/watches";
+import { getWatches } from "@/lib/catalog";
 import WatchCard from "./WatchCard";
 
 export const metadata: Metadata = {
@@ -7,7 +7,8 @@ export const metadata: Metadata = {
   description: "The Vega watch line — health, training, and time, made to glow.",
 };
 
-export default function WatchPage() {
+export default async function WatchPage() {
+  const watches = await getWatches();
   return (
     <div className="mx-auto max-w-280 px-7 py-16">
       <header className="flex flex-col items-center gap-3 pb-14 text-center">

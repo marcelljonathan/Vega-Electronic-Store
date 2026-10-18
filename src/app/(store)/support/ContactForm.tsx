@@ -1,9 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { phones } from "@/lib/phones";
-import { watches } from "@/lib/watches";
-import { audio } from "@/lib/audio";
 import { Field, inputClass } from "../FormField";
 
 type Fields = { name: string; email: string; product: string; message: string };
@@ -29,7 +26,10 @@ function validate(fields: Fields): Errors {
 
 // Mock contact form — validates, then shows a confirmation. Nothing is sent
 // yet; the backend phase will save these as real support tickets.
-export default function ContactForm() {
+// Product names for the "Product" dropdown, grouped like the store.
+export type ProductGroup = { label: string; names: string[] };
+
+export default function ContactForm({ productGroups }: { productGroups: ProductGroup[] }) {
   const [fields, setFields] = useState<Fields>(emptyFields);
   const [errors, setErrors] = useState<Errors>({});
   const [sent, setSent] = useState(false);
@@ -122,27 +122,15 @@ export default function ContactForm() {
           className={inputClass(false)}
         >
           <option value="">General question</option>
-          <optgroup label="Phones">
-            {phones.map((p) => (
-              <option key={p.slug} value={p.name}>
-                {p.name}
-              </option>
-            ))}
-          </optgroup>
-          <optgroup label="Watch">
-            {watches.map((w) => (
-              <option key={w.slug} value={w.name}>
-                {w.name}
-              </option>
-            ))}
-          </optgroup>
-          <optgroup label="Audio">
-            {audio.map((a) => (
-              <option key={a.slug} value={a.name}>
-                {a.name}
-              </option>
-            ))}
-          </optgroup>
+          {productGroups.map((group) => (
+            <optgroup key={group.label} label={group.label}>
+              {group.names.map((name) => (
+                <option key={name} value={name}>
+                  {name}
+                </option>
+              ))}
+            </optgroup>
+          ))}
         </select>
       </Field>
 

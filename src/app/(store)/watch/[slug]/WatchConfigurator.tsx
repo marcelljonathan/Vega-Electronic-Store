@@ -121,9 +121,10 @@ export default function WatchConfigurator({ watch }: { watch: Watch }) {
             </span>
             <button
               onClick={handleAdd}
-              className="rounded-full bg-accent px-7 py-3 text-sm font-semibold text-white"
+              disabled={!watch.available}
+              className="rounded-full bg-accent px-7 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:bg-line disabled:text-muted"
             >
-              Add to cart
+              {watch.available ? "Add to cart" : "Sold out"}
             </button>
           </div>
 

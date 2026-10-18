@@ -1,13 +1,12 @@
 import Link from "next/link";
-import { phones } from "@/lib/phones";
-import { watches } from "@/lib/watches";
-import { audio } from "@/lib/audio";
+import { getPhones, getWatches, getAudio } from "@/lib/catalog";
+import type { Phone } from "@/lib/phones";
 import AudioArt from "./audio/AudioArt";
 import { formatRupiah } from "@/lib/format";
 
 // The hero features the base Vega Ember. Every price and stat on this page
-// is read from the catalog files, so the homepage can't drift out of date.
-function getEmber() {
+// is read from the product catalog, so the homepage can't drift out of date.
+function getEmber(phones: Phone[]) {
   const phone = phones.find((p) => p.slug === "ember");
   if (!phone) throw new Error('Homepage hero: phone "ember" not found in phones.ts');
   return phone;
@@ -16,26 +15,23 @@ function getEmber() {
 const fromPrice = (items: { price: number }[]) =>
   Math.min(...items.map((i) => i.price));
 
-const lineup = [
+const lineupInfo = [
   {
     href: "/phones",
     label: "Phones",
     line: "Four families, from everyday to extraordinary.",
-    from: fromPrice(phones),
     art: "phone",
   },
   {
     href: "/watch",
     label: "Watch",
     line: "Health, fitness and time, right on your wrist.",
-    from: fromPrice(watches),
     art: "watch",
   },
   {
     href: "/audio",
     label: "Audio",
     line: "Earbuds and headphones, tuned by Vega.",
-    from: fromPrice(audio),
     art: "audio",
   },
 ] as const;
@@ -58,8 +54,15 @@ const promises = [
   },
 ] as const;
 
-export default function Home() {
-  const ember = getEmber();
+export default async function Home() {
+  const [phones, watches, audio] = await Promise.all([
+    getPhones(),
+    getWatches(),
+    getAudio(),
+  ]);
+  const ember = getEmber(phones);
+  const fromPrices = { phone: phones, watch: watches, audio };
+  const lineup = lineupInfo.map((c) => ({ ...c, from: fromPrice(fromPrices[c.art]) }));
   const display = ember.keySpecs.find((s) => s.icon === "display");
   const displayFeature = ember.features.find((f) => f.icon === "display");
 

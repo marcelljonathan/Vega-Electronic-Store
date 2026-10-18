@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { phones } from "@/lib/phones";
+import { getPhones } from "@/lib/catalog";
 import PhoneCard from "./PhoneCard";
 
 export const metadata: Metadata = {
@@ -7,7 +7,8 @@ export const metadata: Metadata = {
   description: "The Vega phone lineup — four families, one obsession with light.",
 };
 
-export default function PhonesPage() {
+export default async function PhonesPage() {
+  const phones = await getPhones();
   // Families in first-appearance order.
   const families = Array.from(new Set(phones.map((p) => p.family)));
 

@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { phones } from "@/lib/phones";
+import { getPhones } from "@/lib/catalog";
 
 // Shared frame for Sign in / Sign up: the form on the left, the glowing
 // Vega Ember on the right (large screens only).
-export default function AuthLayout({
+export default async function AuthLayout({
   title,
   subtitle,
   footer,
@@ -14,6 +14,7 @@ export default function AuthLayout({
   footer: React.ReactNode;
   children: React.ReactNode;
 }) {
+  const phones = await getPhones();
   const ember = phones.find((p) => p.slug === "ember") ?? phones[0];
 
   return (

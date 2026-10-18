@@ -55,9 +55,15 @@ export default function WatchCard({ watch }: { watch: Watch }) {
         <span className="text-sm text-muted">{watch.tagline}</span>
       </div>
 
-      <span className="text-sm font-semibold text-accent">
-        From {formatRupiah(watch.price)}
-      </span>
+      {watch.available ? (
+        <span className="text-sm font-semibold text-accent">
+          From {formatRupiah(watch.price)}
+        </span>
+      ) : (
+        <span className="rounded-full bg-line px-2.5 py-0.5 text-xs font-semibold text-muted">
+          Sold out
+        </span>
+      )}
     </div>
   );
 }

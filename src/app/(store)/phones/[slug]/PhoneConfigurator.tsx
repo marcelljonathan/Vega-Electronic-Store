@@ -117,9 +117,10 @@ export default function PhoneConfigurator({ phone }: { phone: Phone }) {
             </span>
             <button
               onClick={handleAdd}
-              className="rounded-full bg-accent px-7 py-3 text-sm font-semibold text-white"
+              disabled={!phone.available}
+              className="rounded-full bg-accent px-7 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:bg-line disabled:text-muted"
             >
-              Add to cart
+              {phone.available ? "Add to cart" : "Sold out"}
             </button>
           </div>
 

@@ -44,9 +44,15 @@ export default function AudioCard({ item }: { item: Audio }) {
         <span className="text-sm text-muted">{item.tagline}</span>
       </div>
 
-      <span className="text-sm font-semibold text-accent">
-        From {formatRupiah(item.price)}
-      </span>
+      {item.available ? (
+        <span className="text-sm font-semibold text-accent">
+          From {formatRupiah(item.price)}
+        </span>
+      ) : (
+        <span className="rounded-full bg-line px-2.5 py-0.5 text-xs font-semibold text-muted">
+          Sold out
+        </span>
+      )}
     </div>
   );
 }

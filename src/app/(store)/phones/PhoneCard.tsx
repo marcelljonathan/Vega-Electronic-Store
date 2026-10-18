@@ -64,9 +64,15 @@ export default function PhoneCard({ phone }: { phone: Phone }) {
         <span className="text-sm text-muted">{phone.tagline}</span>
       </div>
 
-      <span className="text-sm font-semibold text-accent">
-        From {formatRupiah(phone.price)}
-      </span>
+      {phone.available ? (
+        <span className="text-sm font-semibold text-accent">
+          From {formatRupiah(phone.price)}
+        </span>
+      ) : (
+        <span className="rounded-full bg-line px-2.5 py-0.5 text-xs font-semibold text-muted">
+          Sold out
+        </span>
+      )}
     </div>
   );
 }

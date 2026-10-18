@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import HelpCenter from "./HelpCenter";
 import ContactForm from "./ContactForm";
+import { getPhones, getWatches, getAudio } from "@/lib/catalog";
 import { supportContact } from "@/lib/contact";
 
 export const metadata: Metadata = {
@@ -43,7 +44,18 @@ const contacts = [
   { icon: "chat", label: "Live chat", value: "Coming soon", note: "An AI shopping assistant, on every page" },
 ] as const;
 
-export default function SupportPage() {
+export default async function SupportPage() {
+  const [phones, watches, audio] = await Promise.all([
+    getPhones(),
+    getWatches(),
+    getAudio(),
+  ]);
+  const productGroups = [
+    { label: "Phones", names: phones.map((p) => p.name) },
+    { label: "Watch", names: watches.map((w) => w.name) },
+    { label: "Audio", names: audio.map((a) => a.name) },
+  ];
+
   return (
     <div className="mx-auto max-w-280 px-7 py-16">
       <HelpCenter />
@@ -105,7 +117,7 @@ export default function SupportPage() {
             ))}
           </ul>
         </div>
-        <ContactForm />
+        <ContactForm productGroups={productGroups} />
       </section>
     </div>
   );
