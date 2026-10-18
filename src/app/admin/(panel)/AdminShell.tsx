@@ -7,7 +7,7 @@ import SignOutButton from "@/app/(store)/account/SignOutButton";
 
 const sections = [
   { label: "Orders", href: "/orders", ready: true },
-  { label: "Products", href: "/products", ready: false },
+  { label: "Products", href: "/products", ready: true },
   { label: "Messages", href: "/messages", ready: false },
 ];
 

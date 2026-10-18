@@ -3,18 +3,21 @@
 // lib/catalog.ts and edited from the admin site. The original catalog is kept
 // in supabase/005_products_seed.sql.
 
-export type AudioIconName =
-  | "sound"
-  | "battery"
-  | "water"
-  | "mic"
-  | "anc"
-  | "spatial"
-  | "charge"
-  | "fit";
+export const audioIconNames = [
+  "sound",
+  "battery",
+  "water",
+  "mic",
+  "anc",
+  "spatial",
+  "charge",
+  "fit",
+] as const;
+export type AudioIconName = (typeof audioIconNames)[number];
 
 // "buds" or "headphone" picks which CSS placeholder to draw.
-export type AudioShape = "buds" | "headphone";
+export const audioShapes = ["buds", "headphone"] as const;
+export type AudioShape = (typeof audioShapes)[number];
 
 export type Audio = {
   slug: string;

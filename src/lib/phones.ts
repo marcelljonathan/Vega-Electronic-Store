@@ -3,10 +3,12 @@
 // lib/catalog.ts and edited from the admin site. The original catalog is kept
 // in supabase/005_products_seed.sql.
 
-export type SpecIconName = "display" | "camera" | "battery" | "chip";
+export const specIconNames = ["display", "camera", "battery", "chip"] as const;
+export type SpecIconName = (typeof specIconNames)[number];
 
 // Icons for feature cards
-export type PhoneFeatureIcon = "camera" | "display" | "charge" | "shield";
+export const phoneFeatureIcons = ["camera", "display", "charge", "shield"] as const;
+export type PhoneFeatureIcon = (typeof phoneFeatureIcons)[number];
 
 export type Phone = {
   slug: string; // unique URL id, e.g. "spark-plus"

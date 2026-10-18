@@ -4,8 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 import type { Phone } from "./phones";
 import type { Watch } from "./watches";
 import type { Audio } from "./audio";
-
-export type ProductCategory = "phone" | "watch" | "audio";
+import type { ProductCategory } from "./productDraft";
 
 // A row of the "products" table: the common columns, plus everything
 // category-specific in "details".

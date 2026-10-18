@@ -3,19 +3,22 @@
 // lib/catalog.ts and edited from the admin site. The original catalog is kept
 // in supabase/005_products_seed.sql.
 
-export type WatchIconName = "display" | "battery" | "health" | "water";
+export const watchIconNames = ["display", "battery", "health", "water"] as const;
+export type WatchIconName = (typeof watchIconNames)[number];
 
 // Icon names for the "Why Vega Watch" feature cards.
-export type WatchFeatureIcon =
-  | "sleep"
-  | "safety"
-  | "everyday"
-  | "battery"
-  | "ecg"
-  | "gps"
-  | "activity"
-  | "recovery"
-  | "water";
+export const watchFeatureIcons = [
+  "sleep",
+  "safety",
+  "everyday",
+  "battery",
+  "ecg",
+  "gps",
+  "activity",
+  "recovery",
+  "water",
+] as const;
+export type WatchFeatureIcon = (typeof watchFeatureIcons)[number];
 
 export type Watch = {
   slug: string;
