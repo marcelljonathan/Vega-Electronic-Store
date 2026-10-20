@@ -5,6 +5,8 @@ import { createClient } from "@/lib/supabase/server";
 import SignOutButton from "./SignOutButton";
 import { OrderListItem } from "../orders/OrderParts";
 import { ORDER_SELECT, type OrderRow } from "@/lib/orders";
+import { THREAD_SELECT, type SupportThread } from "@/lib/support-threads";
+import { ThreadRow } from "./messages/ThreadView";
 
 export const metadata: Metadata = {
   title: "My account — Vega",
@@ -28,6 +30,16 @@ export default async function AccountPage() {
     .order("created_at", { ascending: false })
     .limit(3);
   const orders = (recent ?? []) as OrderRow[];
+
+  // This buyer's 3 most recent support conversations.
+  const { data: recentThreads } = await supabase
+    .from("support_threads")
+    .select(THREAD_SELECT)
+    .eq("user_id", user.id)
+    .order("last_message_at", { ascending: false })
+    .limit(3);
+  const threads = (recentThreads ?? []) as SupportThread[];
+  const unreadReplies = threads.filter((t) => t.customer_unread).length;
 
   const memberSince = new Date(user.created_at).toLocaleDateString("en-GB", {
     month: "long",
@@ -92,6 +104,38 @@ export default async function AccountPage() {
           )}
         </section>
       </div>
+
+      <section className="flex flex-col gap-4 rounded-3xl bg-card p-6 sm:p-8">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 className="flex items-center gap-2 text-lg font-semibold">
+            Support
+            {unreadReplies > 0 && (
+              <span className="rounded-full bg-accent px-2 py-0.5 text-xs font-semibold text-white">
+                {unreadReplies} new {unreadReplies === 1 ? "reply" : "replies"}
+              </span>
+            )}
+          </h2>
+          <Link
+            href={threads.length > 0 ? "/account/messages" : "/support#contact"}
+            className="text-sm font-semibold text-accent"
+          >
+            {threads.length > 0 ? "View all conversations →" : "Message us →"}
+          </Link>
+        </div>
+        {threads.length === 0 ? (
+          <p className="text-sm text-muted">
+            Questions about a product or an order? Message us and the reply will appear here.
+          </p>
+        ) : (
+          <ul className="flex flex-col gap-3">
+            {threads.map((t) => (
+              <li key={t.id}>
+                <ThreadRow thread={t} />
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
 
       <SignOutButton />
     </div>

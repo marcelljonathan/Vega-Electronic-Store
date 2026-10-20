@@ -43,6 +43,17 @@ export default async function OrderPage({
   if (!data) notFound();
 
   const order = data as OrderRow;
+
+  // An ongoing (not resolved) conversation about this order, if there is one.
+  const { data: activeThread } = await supabase
+    .from("support_threads")
+    .select("id")
+    .eq("order_id", order.id)
+    .eq("user_id", user.id)
+    .neq("status", "resolved")
+    .order("last_message_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
   const a = order.address;
   const delivery = deliveryOptions.find((d) => d.id === order.delivery);
   const payment = paymentOptions.find((p) => p.id === order.payment);
@@ -110,12 +121,38 @@ export default async function OrderPage({
 
       <OrderItems order={order} />
 
-      <p className="text-sm text-muted">
-        Need help with this order?{" "}
-        <Link href="/support#contact" className="font-semibold text-accent">
-          Contact support →
-        </Link>
-      </p>
+      <OrderHelp
+        number={order.number}
+        activeThreadId={activeThread?.id ?? null}
+      />
+    </div>
+  );
+}
+
+// "Ask about this order" — or continue the conversation already in progress.
+function OrderHelp({
+  number,
+  activeThreadId,
+}: {
+  number: string;
+  activeThreadId: string | null;
+}) {
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-4 rounded-3xl bg-card p-5 sm:p-6">
+      <div className="flex flex-col">
+        <span className="font-semibold">Questions about this order?</span>
+        <span className="text-sm text-muted">
+          {activeThreadId
+            ? "You already have a conversation about it with our team."
+            : "Message our team — they'll see this order's details."}
+        </span>
+      </div>
+      <Link
+        href={activeThreadId ? `/account/messages/${activeThreadId}` : `/support?order=${number}#contact`}
+        className="rounded-full bg-accent px-6 py-2.5 text-sm font-semibold text-white"
+      >
+        {activeThreadId ? "Continue the conversation" : "Ask about this order"}
+      </Link>
     </div>
   );
 }

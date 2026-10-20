@@ -8,17 +8,19 @@ import SignOutButton from "@/app/(store)/account/SignOutButton";
 const sections = [
   { label: "Orders", href: "/orders", ready: true },
   { label: "Products", href: "/products", ready: true },
-  { label: "Messages", href: "/messages", ready: false },
+  { label: "Messages", href: "/messages", ready: true },
 ];
 
 // Sidebar (top bar on small screens) + the page area.
 export default function AdminShell({
   email,
   storeUrl,
+  unreadMessages,
   children,
 }: {
   email: string;
   storeUrl: string;
+  unreadMessages: number;
   children: React.ReactNode;
 }) {
   const pathname = usePathname().replace(/^\/admin/, "");
@@ -57,6 +59,11 @@ export default function AdminShell({
                 }`}
               >
                 {s.label}
+                {s.href === "/messages" && unreadMessages > 0 && (
+                  <span className="ml-2 rounded-full bg-accent px-1.5 py-0.5 text-[11px] font-semibold text-white tabular-nums">
+                    {unreadMessages}
+                  </span>
+                )}
               </Link>
             ) : (
               <span

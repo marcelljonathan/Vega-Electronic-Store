@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 import { useCart } from "./CartProvider";
 import { useAuth } from "./AuthProvider";
 
@@ -21,6 +23,7 @@ export default function Nav({
 }) {
   const { count, openCart } = useCart();
   const { user, ready } = useAuth();
+  const unread = useUnreadReplies(user?.id ?? null);
   const hidden = useHideOnScroll();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuButton = useRef<HTMLButtonElement>(null);
@@ -109,14 +112,21 @@ export default function Nav({
             <Link
               href={user || !ready ? "/account" : "/signin"}
               onClick={closeMenu}
-              aria-label={user ? "My account" : "Sign in"}
-              className={`grid h-9 w-9 place-items-center rounded-full text-sm font-semibold transition-colors ${
+              aria-label={
+                user
+                  ? `My account${unread ? `, ${unread} new support ${unread === 1 ? "reply" : "replies"}` : ""}`
+                  : "Sign in"
+              }
+              className={`relative grid h-9 w-9 place-items-center rounded-full text-sm font-semibold transition-colors ${
                 user
                   ? "bg-accent text-white"
                   : "border border-line text-muted hover:text-fg"
               }`}
             >
               {user ? user.fullName.charAt(0).toUpperCase() : <PersonIcon />}
+              {unread > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-bg bg-red-500" />
+              )}
             </Link>
             {/* Mobile menu toggle — phones only */}
             <button
@@ -162,7 +172,14 @@ export default function Nav({
                 onClick={closeMenu}
                 className="flex items-center justify-between py-4 text-lg font-medium text-muted"
               >
-                {user ? "My account" : "Sign in"}
+                <span>
+                  {user ? "My account" : "Sign in"}
+                  {unread > 0 && (
+                    <span className="ml-2 text-sm text-red-500">
+                      · {unread} new {unread === 1 ? "reply" : "replies"}
+                    </span>
+                  )}
+                </span>
                 <span aria-hidden="true">→</span>
               </Link>
             </li>
@@ -180,6 +197,23 @@ export default function Nav({
       />
     </>
   );
+}
+
+// How many of the buyer's support conversations have a reply they haven't
+// opened yet. Checked again on every page change.
+function useUnreadReplies(userId: string | null) {
+  const pathname = usePathname();
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    if (!userId) return;
+    createClient()
+      .from("support_threads")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", userId)
+      .eq("customer_unread", true)
+      .then(({ count }) => setCount(count ?? 0));
+  }, [userId, pathname]);
+  return userId ? count : 0;
 }
 
 // Hides the nav while scrolling down and brings it back on any scroll up.

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import HelpCenter from "./HelpCenter";
+import { Suspense } from "react";
 import ContactForm from "./ContactForm";
 import { getPhones, getWatches, getAudio } from "@/lib/catalog";
 import { supportContact } from "@/lib/contact";
@@ -98,8 +99,8 @@ export default async function SupportPage() {
               Still need help?
             </h2>
             <p className="leading-relaxed text-muted">
-              Send us a message and a real person will get back to you — every
-              day of the week.
+              Send us a message and a real person will reply in your account —
+              every day of the week.
             </p>
           </div>
           <ul className="flex flex-col gap-5">
@@ -117,7 +118,9 @@ export default async function SupportPage() {
             ))}
           </ul>
         </div>
-        <ContactForm productGroups={productGroups} />
+        <Suspense fallback={<div className="min-h-80 rounded-3xl bg-card" />}>
+          <ContactForm productGroups={productGroups} />
+        </Suspense>
       </section>
     </div>
   );

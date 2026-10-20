@@ -1,84 +1,95 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useAuth } from "../AuthProvider";
 import { Field, inputClass } from "../FormField";
+import { MESSAGE_MAX, MESSAGE_MIN } from "@/lib/support-threads";
+import { startConversation } from "../account/messages/actions";
 
-type Fields = { name: string; email: string; product: string; message: string };
-// Each field may have an error message (or none).
-type Errors = Partial<Record<keyof Fields, string>>;
-
-const emptyFields: Fields = { name: "", email: "", product: "", message: "" };
-
-// Returns an error per invalid field; an empty object means all good.
-function validate(fields: Fields): Errors {
-  const errors: Errors = {};
-  if (!fields.name.trim()) {
-    errors.name = "Please tell us your name.";
-  }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fields.email.trim())) {
-    errors.email = "Please enter a valid email address.";
-  }
-  if (fields.message.trim().length < 10) {
-    errors.message = "Please write at least 10 characters so we can help.";
-  }
-  return errors;
-}
-
-// Mock contact form — validates, then shows a confirmation. Nothing is sent
-// yet; the backend phase will save these as real support tickets.
 // Product names for the "Product" dropdown, grouped like the store.
 export type ProductGroup = { label: string; names: string[] };
 
-export default function ContactForm({ productGroups }: { productGroups: ProductGroup[] }) {
-  const [fields, setFields] = useState<Fields>(emptyFields);
-  const [errors, setErrors] = useState<Errors>({});
-  const [sent, setSent] = useState(false);
+// Contact form: signed-in buyers start a conversation with the Vega team;
+// the reply arrives in their account. Visitors are asked to sign in first.
+export default function ContactForm({
+  productGroups,
+}: {
+  productGroups: ProductGroup[];
+}) {
+  const { user, ready } = useAuth();
+  const router = useRouter();
+  // Arriving from "Start a follow-up": /support?followUp=<id>&product=<name>#contact
+  const searchParams = useSearchParams();
+  const followUpOf = searchParams.get("followUp") ?? "";
+  // Arriving from "Ask about this order": /support?order=VG-10001#contact
+  const orderNumber = searchParams.get("order") ?? "";
+  const [product, setProduct] = useState(searchParams.get("product") ?? "");
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [pending, startTransition] = useTransition();
 
-  function update(name: keyof Fields, value: string) {
-    setFields((prev) => ({ ...prev, [name]: value }));
-    // Clear that field's error as soon as the user edits it.
-    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: undefined }));
+  if (!ready) {
+    return <div className="min-h-80 rounded-3xl bg-card" />;
+  }
+
+  if (!user) {
+    return (
+      <div className="flex flex-col items-start justify-center gap-5 rounded-3xl bg-card p-6 sm:p-8">
+        <h3 className="text-2xl font-medium tracking-tight">
+          Sign in to message us
+        </h3>
+        <p className="max-w-[46ch] text-sm leading-relaxed text-muted">
+          Conversations live in your Vega account, so our replies — and your
+          order details — are all in one place.
+        </p>
+        <div className="flex flex-wrap gap-3">
+          <Link
+            href="/signin?next=/support%23contact"
+            className="rounded-full bg-accent px-6 py-3 text-sm font-semibold text-white"
+          >
+            Sign in
+          </Link>
+          <Link
+            href="/signup?next=/support%23contact"
+            className="rounded-full border border-line px-6 py-3 text-sm font-semibold transition-colors hover:border-fg"
+          >
+            Create account
+          </Link>
+        </div>
+        <p className="text-xs text-muted">
+          Just a quick question? Our AI shopping assistant is coming soon — no
+          account needed.
+        </p>
+      </div>
+    );
   }
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault(); // stop the browser's default page reload
-    const found = validate(fields);
-    setErrors(found);
-    if (Object.keys(found).length === 0) setSent(true);
-  }
-
-  function reset() {
-    setFields(emptyFields);
-    setErrors({});
-    setSent(false);
-  }
-
-  if (sent) {
-    return (
-      <div
-        role="status"
-        className="flex flex-col items-center justify-center gap-3 rounded-3xl bg-card p-8 text-center"
-      >
-        <span className="grid h-12 w-12 place-items-center rounded-full bg-accent text-lg text-white">
-          ✓
-        </span>
-        <span className="text-lg font-semibold">
-          Thanks, {fields.name.trim()}!
-        </span>
-        <p className="max-w-[40ch] text-sm leading-relaxed text-muted">
-          We&apos;ve got your message
-          {fields.product ? ` about your ${fields.product}` : ""} and will reply
-          to {fields.email.trim()} within 24 hours. (This is a demo — nothing
-          was actually sent.)
-        </p>
-        <button
-          onClick={reset}
-          className="mt-2 text-sm font-semibold text-accent"
-        >
-          Send another message
-        </button>
-      </div>
-    );
+    e.preventDefault();
+    if (message.trim().length < MESSAGE_MIN) {
+      setError(
+        `Please write at least ${MESSAGE_MIN} characters so we can help.`,
+      );
+      return;
+    }
+    setError(null);
+    startTransition(async () => {
+      const result = await startConversation({
+        product,
+        message,
+        followUpOf,
+        orderNumber,
+      });
+      if (!result.ok) {
+        if (result.reason === "signin")
+          router.push("/signin?next=/support%23contact");
+        else setError(result.message);
+        return;
+      }
+      router.push(`/account/messages/${result.threadId}?sent=1`);
+    });
   }
 
   return (
@@ -87,74 +98,89 @@ export default function ContactForm({ productGroups }: { productGroups: ProductG
       noValidate
       className="flex flex-col gap-5 rounded-3xl bg-card p-6 sm:p-8"
     >
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-        <Field id="contact-name" label="Name" error={errors.name}>
-          <input
-            id="contact-name"
-            type="text"
-            autoComplete="name"
-            value={fields.name}
-            onChange={(e) => update("name", e.target.value)}
-            aria-invalid={errors.name ? true : undefined}
-            aria-describedby={errors.name ? "contact-name-error" : undefined}
-            className={inputClass(!!errors.name)}
-          />
-        </Field>
-        <Field id="contact-email" label="Email" error={errors.email}>
-          <input
-            id="contact-email"
-            type="email"
-            autoComplete="email"
-            value={fields.email}
-            onChange={(e) => update("email", e.target.value)}
-            aria-invalid={errors.email ? true : undefined}
-            aria-describedby={errors.email ? "contact-email-error" : undefined}
-            className={inputClass(!!errors.email)}
-          />
-        </Field>
-      </div>
+      <p className="text-sm text-muted">
+        Writing as{" "}
+        <span className="font-semibold text-fg">{user.fullName}</span> ·{" "}
+        <span className="break-all">{user.email}</span>
+      </p>
+      {followUpOf && (
+        <p className="rounded-xl bg-bg px-4 py-3 text-sm">
+          ↩ Follow-up to{" "}
+          <Link
+            href={`/account/messages/${followUpOf}`}
+            className="font-semibold text-accent"
+          >
+            your earlier conversation
+          </Link>
+          . Our team will see both.
+        </p>
+      )}
 
-      <Field id="contact-product" label="Product (optional)">
-        <select
-          id="contact-product"
-          value={fields.product}
-          onChange={(e) => update("product", e.target.value)}
-          className={inputClass(false)}
-        >
-          <option value="">General question</option>
-          {productGroups.map((group) => (
-            <optgroup key={group.label} label={group.label}>
-              {group.names.map((name) => (
-                <option key={name} value={name}>
-                  {name}
-                </option>
-              ))}
-            </optgroup>
-          ))}
-        </select>
-      </Field>
+      {orderNumber && (
+        <p className="rounded-xl bg-bg px-4 py-3 text-sm">
+          About{" "}
+          <Link
+            href={`/orders/${orderNumber}`}
+            className="font-semibold text-accent"
+          >
+            order {orderNumber}
+          </Link>
+          . Our team will see its details.
+        </p>
+      )}
 
-      <Field id="contact-message" label="How can we help?" error={errors.message}>
+      {!orderNumber && (
+        <Field id="contact-product" label="Product (optional)">
+          <select
+            id="contact-product"
+            value={product}
+            onChange={(e) => setProduct(e.target.value)}
+            className={inputClass(false)}
+          >
+            <option value="">General question</option>
+            {productGroups.map((group) => (
+              <optgroup key={group.label} label={group.label}>
+                {group.names.map((name) => (
+                  <option key={name} value={name}>
+                    {name}
+                  </option>
+                ))}
+              </optgroup>
+            ))}
+          </select>
+        </Field>
+      )}
+
+      <Field
+        id="contact-message"
+        label="How can we help?"
+        error={error ?? undefined}
+      >
         <textarea
           id="contact-message"
           rows={5}
-          value={fields.message}
-          onChange={(e) => update("message", e.target.value)}
-          aria-invalid={errors.message ? true : undefined}
-          aria-describedby={errors.message ? "contact-message-error" : undefined}
-          className={`${inputClass(!!errors.message)} resize-y`}
+          value={message}
+          maxLength={MESSAGE_MAX}
+          onChange={(e) => {
+            setMessage(e.target.value);
+            if (error) setError(null);
+          }}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={error ? "contact-message-error" : undefined}
+          className={`${inputClass(!!error)} resize-y`}
         />
       </Field>
 
       <div className="flex flex-wrap items-center justify-between gap-4">
         <span className="text-xs text-muted">
-          Demo form — messages aren&apos;t actually sent.
+          Our reply will appear in your account.
         </span>
         <button
           type="submit"
-          className="rounded-full bg-accent px-7 py-3 text-sm font-semibold text-white"
+          disabled={pending}
+          className="rounded-full bg-accent px-7 py-3 text-sm font-semibold text-white transition-opacity disabled:opacity-60"
         >
-          Send message
+          {pending ? "Sending…" : "Send message"}
         </button>
       </div>
     </form>
