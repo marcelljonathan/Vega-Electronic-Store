@@ -7,6 +7,7 @@ import { useAuth } from "../AuthProvider";
 import { Field, inputClass } from "../FormField";
 import { MESSAGE_MAX, MESSAGE_MIN } from "@/lib/support-threads";
 import { startConversation } from "../account/messages/actions";
+import { OpenAssistantButton } from "../Assistant";
 
 // Product names for the "Product" dropdown, grouped like the store.
 export type ProductGroup = { label: string; names: string[] };
@@ -59,8 +60,11 @@ export default function ContactForm({
           </Link>
         </div>
         <p className="text-xs text-muted">
-          Just a quick question? Our AI shopping assistant is coming soon — no
-          account needed.
+          Just a quick question?{" "}
+          <OpenAssistantButton className="font-semibold text-accent">
+            Ask our AI assistant
+          </OpenAssistantButton>{" "}
+          — no account needed.
         </p>
       </div>
     );

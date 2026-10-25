@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import HelpCenter from "./HelpCenter";
 import { Suspense } from "react";
 import ContactForm from "./ContactForm";
+import { OpenAssistantButton } from "../Assistant";
 import { getPhones, getWatches, getAudio } from "@/lib/catalog";
 import { supportContact } from "@/lib/contact";
 
@@ -42,7 +43,7 @@ const policies = [
 const contacts = [
   { icon: "email", label: "Email", value: supportContact.email, note: "Replies within 24 hours" },
   { icon: "phone", label: "Phone", value: supportContact.phone, note: supportContact.hours },
-  { icon: "chat", label: "Live chat", value: "Coming soon", note: "An AI shopping assistant, on every page" },
+  { icon: "chat", label: "AI assistant", value: "Ask Vega →", note: "Instant answers, no sign-in needed" },
 ] as const;
 
 export default async function SupportPage() {
@@ -111,7 +112,13 @@ export default async function SupportPage() {
                 </span>
                 <div className="flex flex-col">
                   <span className="text-xs text-muted">{c.label}</span>
-                  <span className="text-sm font-semibold">{c.value}</span>
+                  {c.icon === "chat" ? (
+                    <OpenAssistantButton className="self-start text-sm font-semibold text-accent">
+                      {c.value}
+                    </OpenAssistantButton>
+                  ) : (
+                    <span className="text-sm font-semibold">{c.value}</span>
+                  )}
                   <span className="text-xs text-muted">{c.note}</span>
                 </div>
               </li>
