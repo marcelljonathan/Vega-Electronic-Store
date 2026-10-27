@@ -45,7 +45,10 @@ export const deliveryOptions = [
   { id: "express", label: "Express", time: "1–2 business days", fee: 50_000 },
 ] as const;
 
+// How an order is paid. New orders use Midtrans (which offers cards, virtual
+// accounts, QRIS and e-wallets); the others label older demo orders.
 export const paymentOptions = [
+  { id: "midtrans", label: "Midtrans" },
   { id: "card", label: "Credit or debit card" },
   { id: "bank", label: "Bank transfer" },
   { id: "ewallet", label: "E-wallet" },

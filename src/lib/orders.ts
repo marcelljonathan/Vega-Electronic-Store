@@ -1,7 +1,12 @@
 import type { CartItem } from "@/app/(store)/CartProvider";
 import type { Address, DeliveryId, PaymentId } from "./checkout";
 
-export type OrderStatus = "processing" | "shipped" | "delivered" | "cancelled";
+export type OrderStatus =
+  | "awaiting_payment"
+  | "processing"
+  | "shipped"
+  | "delivered"
+  | "cancelled";
 
 // Rows as they come from Supabase (snake_case columns).
 export type OrderItemRow = {
@@ -33,6 +38,11 @@ export type OrderRow = {
   shipped_at: string | null;
   delivered_at: string | null;
   cancelled_at: string | null;
+  paid_at: string | null;
+  payment_method: string | null; // what the buyer paid with in Midtrans
+  payment_token: string | null;
+  payment_expires_at: string | null;
+  cancel_reason: "payment_expired" | null;
   order_items: OrderItemRow[];
 };
 
@@ -40,6 +50,11 @@ export const orderStatuses: Record<
   OrderStatus,
   { label: string; pill: string; dot: string }
 > = {
+  awaiting_payment: {
+    label: "Awaiting payment",
+    pill: "bg-violet-500/12 text-violet-600 dark:text-violet-400",
+    dot: "bg-violet-500",
+  },
   processing: {
     label: "Processing",
     pill: "bg-amber-500/12 text-amber-600 dark:text-amber-400",
@@ -63,8 +78,10 @@ export const orderStatuses: Record<
 };
 
 // Which status an order can move to next, and the admin button for it.
-// Delivered and cancelled orders are finished.
+// Delivered and cancelled orders are finished. An unpaid order only moves
+// on when Midtrans confirms the payment — admins can only cancel it.
 export const nextStatuses: Record<OrderStatus, OrderStatus[]> = {
+  awaiting_payment: ["cancelled"],
   processing: ["shipped", "cancelled"],
   shipped: ["delivered", "cancelled"],
   delivered: [],
@@ -72,6 +89,7 @@ export const nextStatuses: Record<OrderStatus, OrderStatus[]> = {
 };
 
 export const statusActionLabels: Record<OrderStatus, string> = {
+  awaiting_payment: "Mark as awaiting payment",
   processing: "Mark as processing",
   shipped: "Mark as shipped",
   delivered: "Mark as delivered",
@@ -103,6 +121,17 @@ export function formatOrderDate(iso: string, month: "long" | "short" = "long") {
     day: "numeric",
     month,
     year: "numeric",
+    timeZone: "Asia/Jakarta",
+  });
+}
+
+// "27 Oct, 14:30" — payment deadlines and times.
+export function formatDateTime(iso: string) {
+  return new Date(iso).toLocaleString("en-GB", {
+    day: "numeric",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
     timeZone: "Asia/Jakarta",
   });
 }

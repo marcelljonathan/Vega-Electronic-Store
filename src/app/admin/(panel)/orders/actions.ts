@@ -2,6 +2,7 @@
 
 import { requireAdmin } from "@/lib/admin";
 import { nextStatuses, orderStatuses, type OrderStatus } from "@/lib/orders";
+import { cancelAtMidtrans } from "@/lib/midtrans";
 
 export type UpdateStatusResult = { ok: true } | { ok: false; message: string };
 
@@ -52,5 +53,7 @@ export async function updateOrderStatus(
       message: "Couldn't update the order — it may have just changed. Refresh and try again.",
     };
   }
+  // Cancelling an unpaid order closes its payment at Midtrans too.
+  if (current === "awaiting_payment") await cancelAtMidtrans(number);
   return { ok: true };
 }

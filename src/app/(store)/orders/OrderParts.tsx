@@ -1,11 +1,13 @@
 import Link from "next/link";
 import ProductThumb from "../ProductThumb";
 import { formatRupiah } from "@/lib/format";
+import { paymentOptions } from "@/lib/checkout";
 import {
   orderStatuses,
   toCartItem,
   sortedItems,
   formatOrderDate,
+  formatDateTime,
   formatDayMonth,
   type OrderRow,
   type OrderStatus,
@@ -67,12 +69,14 @@ export function OrderListItem({ order }: { order: OrderRow }) {
   );
 }
 
-// Placed → Processing → Shipped → Delivered, with the date each step happened.
+// Placed → Paid → Shipped → Delivered, with the date each step happened.
 export function OrderTracker({ order }: { order: OrderRow }) {
   if (order.status === "cancelled") {
     return (
       <p className="rounded-2xl border border-line p-5 text-sm text-muted">
-        This order was cancelled
+        {order.cancel_reason === "payment_expired"
+          ? "This order was cancelled because it wasn't paid in time"
+          : "This order was cancelled"}
         {order.cancelled_at ? ` on ${formatOrderDate(order.cancelled_at)}` : ""}.
       </p>
     );
@@ -81,13 +85,13 @@ export function OrderTracker({ order }: { order: OrderRow }) {
   const steps: { label: string; reachedAt: OrderStatus[]; date: string | null }[] = [
     {
       label: "Placed",
-      reachedAt: ["processing", "shipped", "delivered"],
+      reachedAt: ["awaiting_payment", "processing", "shipped", "delivered"],
       date: order.created_at,
     },
     {
-      label: "Processing",
+      label: "Paid",
       reachedAt: ["processing", "shipped", "delivered"],
-      date: null,
+      date: order.paid_at,
     },
     { label: "Shipped", reachedAt: ["shipped", "delivered"], date: order.shipped_at },
     { label: "Delivered", reachedAt: ["delivered"], date: order.delivered_at },
@@ -171,6 +175,34 @@ export function OrderItems({ order }: { order: OrderRow }) {
         </div>
       </dl>
     </section>
+  );
+}
+
+// The "Payment" card: how and when it was paid, or what's still due.
+export function PaymentInfo({ order }: { order: OrderRow }) {
+  let lines: [string, string];
+  if (order.payment !== "midtrans") {
+    // Orders from before payments were added.
+    const legacy = paymentOptions.find((p) => p.id === order.payment);
+    lines = [legacy?.label ?? "—", "Demo — not charged"];
+  } else if (order.paid_at) {
+    lines = [order.payment_method ?? "Midtrans", `Paid ${formatDateTime(order.paid_at)} · test mode`];
+  } else if (order.status === "awaiting_payment") {
+    lines = [
+      order.payment_method ?? "Not paid yet",
+      order.payment_expires_at ? `Pay by ${formatDateTime(order.payment_expires_at)}` : "Waiting for payment",
+    ];
+  } else {
+    lines = [
+      "Not paid",
+      order.cancel_reason === "payment_expired" ? "Payment time ran out" : "Order cancelled",
+    ];
+  }
+  return (
+    <InfoCard title="Payment">
+      <span className="font-semibold text-fg">{lines[0]}</span>
+      <span>{lines[1]}</span>
+    </InfoCard>
   );
 }
 

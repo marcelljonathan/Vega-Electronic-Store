@@ -13,12 +13,11 @@ import { createClient } from "@/lib/supabase/client";
 import {
   provinces,
   deliveryOptions,
-  paymentOptions,
   validateAddress,
   type Address,
   type DeliveryId,
-  type PaymentId,
 } from "@/lib/checkout";
+import { openPaymentWindow } from "@/lib/snap";
 import { placeOrder } from "./actions";
 
 type Fields = Address;
@@ -45,8 +44,9 @@ const fieldOrder: (keyof Fields)[] = [
   "postalCode",
 ];
 
-// Checkout: signed-in buyers fill in the address, delivery and payment, then
-// "Place order" asks the Vega server to check everything and save the order.
+// Checkout: signed-in buyers fill in the address and delivery, then
+// "Place order & pay" asks the Vega server to check everything and save the
+// order, and the Midtrans payment window opens for it.
 export default function Checkout() {
   const { items, total: subtotal, count, clearCart, openCart } = useCart();
   const { user, ready } = useAuth();
@@ -55,7 +55,6 @@ export default function Checkout() {
   const [fields, setFields] = useState<Fields>(emptyFields);
   const [errors, setErrors] = useState<Errors>({});
   const [delivery, setDelivery] = useState<DeliveryId>("standard");
-  const [payment, setPayment] = useState<PaymentId>("card");
   const [pending, setPending] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [placing, setPlacing] = useState(false);
@@ -83,10 +82,19 @@ export default function Checkout() {
       });
   }, [userId]);
 
-  // Wait for the saved cart and the sign-in to load; hold the page while
-  // leaving after "Place order".
-  if (!isClient || !ready || placing) {
+  // Wait for the saved cart and the sign-in to load.
+  if (!isClient || !ready) {
     return <div className="min-h-[60vh]" />;
+  }
+
+  // The order is placed; the payment window is open over the page.
+  if (placing) {
+    return (
+      <div className="mx-auto flex min-h-[60vh] max-w-280 flex-col items-center justify-center gap-2 px-7 text-center">
+        <p className="text-lg font-semibold">Complete your payment in the Midtrans window.</p>
+        <p className="text-sm text-muted">Your order is saved — you&apos;ll see it right after.</p>
+      </div>
+    );
   }
 
   if (items.length === 0) {
@@ -164,7 +172,6 @@ export default function Checkout() {
         })),
         address: fields,
         delivery,
-        payment,
       });
       if (!result.ok) {
         setPending(false);
@@ -174,6 +181,9 @@ export default function Checkout() {
       }
       setPlacing(true);
       clearCart();
+      // Pay now. Whatever happens in the window (paid, closed, failed), the
+      // order page then shows the real status, checked with Midtrans.
+      if (result.token) await openPaymentWindow(result.token).catch(() => null);
       router.push(`/orders/${result.number}?placed=1`);
     } catch {
       setPending(false);
@@ -211,10 +221,10 @@ export default function Checkout() {
             disabled={pending}
             className="rounded-full bg-accent px-6 py-3.5 text-sm font-semibold text-white transition-opacity disabled:opacity-60"
           >
-            {pending ? "Placing order…" : "Place order"}
+            {pending ? "Placing order…" : "Place order & pay"}
           </button>
           <p className="text-center text-xs text-muted">
-            Demo store — no real payment is taken.
+            Test mode — no real money is charged.
           </p>
         </>
       }
@@ -337,22 +347,20 @@ export default function Checkout() {
       </Section>
 
       <Section step={4} title="Payment">
-        <fieldset className="flex flex-col gap-3">
-          <legend className="sr-only">Payment method</legend>
-          {paymentOptions.map((p) => (
-            <OptionCard
-              key={p.id}
-              name="payment"
-              checked={payment === p.id}
-              onChange={() => setPayment(p.id)}
-            >
-              <span className="text-sm font-semibold">{p.label}</span>
-            </OptionCard>
-          ))}
-        </fieldset>
+        <div className="flex flex-col gap-2 rounded-2xl border border-line bg-bg p-5">
+          <p className="text-sm leading-relaxed">
+            You&apos;ll choose how to pay in a secure{" "}
+            <span className="font-semibold">Midtrans</span> window that opens
+            after you place your order.
+          </p>
+          <p className="text-xs text-muted">
+            Available there: card · virtual account · QRIS · GoPay · ShopeePay
+          </p>
+        </div>
         <p className="text-xs leading-relaxed text-muted">
-          This is a demo store — you won&apos;t be asked for any payment
-          details, and nothing is charged.
+          Test mode: pay with Midtrans&apos;s test card (4811 1111 1111 1114,
+          CVV 123, OTP 112233) or its payment simulator. No real money moves.
+          Unpaid orders are cancelled after 24 hours.
         </p>
       </Section>
     </CheckoutFrame>

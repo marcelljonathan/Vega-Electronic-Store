@@ -31,7 +31,7 @@ export default async function AdminOrdersPage({
   const summary = (all ?? []) as { status: OrderStatus; total: number }[];
   const countOf = (s: OrderStatus) => summary.filter((o) => o.status === s).length;
   const revenue = summary
-    .filter((o) => o.status !== "cancelled")
+    .filter((o) => o.status !== "cancelled" && o.status !== "awaiting_payment")
     .reduce((sum, o) => sum + o.total, 0);
 
   // The list, filtered by the tab and the search box.
@@ -57,7 +57,7 @@ export default async function AdminOrdersPage({
     { label: "Processing", value: String(countOf("processing")), note: "Waiting to ship" },
     { label: "Shipped", value: String(countOf("shipped")), note: "On the way" },
     { label: "Delivered", value: String(countOf("delivered")), note: "Completed" },
-    { label: "Revenue", value: formatRupiah(revenue), note: "Excludes cancelled" },
+    { label: "Revenue", value: formatRupiah(revenue), note: "Paid orders only" },
   ];
 
   return (

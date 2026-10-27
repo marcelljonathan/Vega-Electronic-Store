@@ -7,21 +7,23 @@ import { getCatalogFresh } from "@/lib/catalog";
 import type { CartItem } from "../CartProvider";
 import {
   deliveryOptions,
-  paymentOptions,
   validateAddress,
   cleanAddress,
   type Address,
 } from "@/lib/checkout";
+import { ORDER_SELECT, type OrderRow } from "@/lib/orders";
+import { paymentWindowFor, paymentsReady } from "@/lib/midtrans";
 
 export type PlaceOrderInput = {
   items: OrderLineInput[];
   address: Address;
   delivery: string;
-  payment: string;
 };
 
 export type PlaceOrderResult =
-  | { ok: true; number: string }
+  // token: the Midtrans payment window to open (null if it couldn't be
+  // prepared — the order page offers "Pay now" instead).
+  | { ok: true; number: string; token: string | null }
   | {
       ok: false;
       reason: "signin" | "invalid" | "unavailable" | "failed";
@@ -47,7 +49,15 @@ export async function placeOrder(
     };
   }
 
-  // 2. Address, delivery and payment must be valid.
+  if (!paymentsReady()) {
+    return {
+      ok: false,
+      reason: "failed",
+      message: "Payments aren't set up yet, so orders can't be placed right now.",
+    };
+  }
+
+  // 2. Address and delivery must be valid.
   const raw = input.address ?? {};
   const address: Address = {
     fullName: String(raw.fullName ?? ""),
@@ -59,12 +69,7 @@ export async function placeOrder(
     postalCode: String(raw.postalCode ?? ""),
   };
   const delivery = deliveryOptions.find((d) => d.id === input.delivery);
-  const payment = paymentOptions.find((p) => p.id === input.payment);
-  if (
-    Object.keys(validateAddress(address)).length > 0 ||
-    !delivery ||
-    !payment
-  ) {
+  if (Object.keys(validateAddress(address)).length > 0 || !delivery) {
     return {
       ok: false,
       reason: "invalid",
@@ -101,17 +106,18 @@ export async function placeOrder(
   const shippingFee = delivery.fee;
   const total = subtotal + shippingFee;
 
-  // 4. Save the order, then its items. If the items fail, remove the order
-  //    so there's never an order without items.
+  // 4. Save the order (awaiting payment), then its items. If the items fail,
+  //    remove the order so there's never an order without items.
   const admin = createAdminClient();
   const { data: order, error } = await admin
     .from("orders")
     .insert({
       user_id: user.id,
+      status: "awaiting_payment",
       email: user.email,
       address: cleanAddress(address),
       delivery: delivery.id,
-      payment: payment.id,
+      payment: "midtrans",
       subtotal,
       shipping_fee: shippingFee,
       total,
@@ -154,5 +160,13 @@ export async function placeOrder(
     };
   }
 
-  return { ok: true, number: order.number };
+  // 5. Prepare the Midtrans payment window for exactly this order's total.
+  const { data: saved } = await admin
+    .from("orders")
+    .select(ORDER_SELECT)
+    .eq("id", order.id)
+    .single();
+  const token = saved ? await paymentWindowFor(saved as OrderRow) : null;
+
+  return { ok: true, number: order.number, token };
 }

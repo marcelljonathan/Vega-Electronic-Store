@@ -2,13 +2,15 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireAdmin } from "@/lib/admin";
-import { deliveryOptions, paymentOptions } from "@/lib/checkout";
+import { deliveryOptions } from "@/lib/checkout";
 import { ORDER_SELECT, formatOrderDate, formatPhone, type OrderRow } from "@/lib/orders";
+import { syncPayment } from "@/lib/midtrans";
 import {
   StatusPill,
   OrderTracker,
   OrderItems,
   InfoCard,
+  PaymentInfo,
 } from "@/app/(store)/orders/OrderParts";
 import StatusActions from "../StatusActions";
 import { formatMessageTime, type ThreadStatus } from "@/lib/support-threads";
@@ -27,14 +29,14 @@ export default async function AdminOrderPage({
   const { supabase } = await requireAdmin();
   const { number } = await params;
 
-  const { data } = await supabase
-    .from("orders")
-    .select(ORDER_SELECT)
-    .eq("number", number)
-    .maybeSingle();
-  if (!data) notFound();
+  const loadOrder = async () =>
+    (await supabase.from("orders").select(ORDER_SELECT).eq("number", number).maybeSingle())
+      .data as OrderRow | null;
+  let order = await loadOrder();
+  if (!order) notFound();
 
-  const order = data as OrderRow;
+  // Unpaid? Ask Midtrans whether it's been paid (or expired) since.
+  if ((await syncPayment(order)).changed) order = (await loadOrder()) ?? order;
 
   const { data: threadRows } = await supabase
     .from("support_threads")
@@ -48,7 +50,6 @@ export default async function AdminOrderPage({
   }[];
   const a = order.address;
   const delivery = deliveryOptions.find((d) => d.id === order.delivery);
-  const payment = paymentOptions.find((p) => p.id === order.payment);
 
   return (
     <div className="flex max-w-4xl flex-col gap-8">
@@ -94,10 +95,7 @@ export default async function AdminOrderPage({
           <span className="font-semibold text-fg">{delivery?.label}</span>
           <span>{delivery?.time}</span>
         </InfoCard>
-        <InfoCard title="Payment">
-          <span className="font-semibold text-fg">{payment?.label}</span>
-          <span>Demo — not charged</span>
-        </InfoCard>
+        <PaymentInfo order={order} />
       </div>
 
       <OrderItems order={order} />

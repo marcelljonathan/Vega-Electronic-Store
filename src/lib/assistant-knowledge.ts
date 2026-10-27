@@ -2,7 +2,7 @@ import "server-only";
 import { getAudio, getPhones, getWatches } from "./catalog";
 import { faqs } from "./support";
 import { supportContact } from "./contact";
-import { deliveryOptions, paymentOptions } from "./checkout";
+import { deliveryOptions } from "./checkout";
 import { formatRupiah } from "./format";
 
 // Everything the assistant knows comes from here: its rules, the store's
@@ -138,7 +138,7 @@ function storeText() {
     .join("; ");
   return `# The store
 - Shipping across Indonesia. ${delivery}. Orders usually leave the warehouse within 1 business day.
-- Payment methods at checkout: ${paymentOptions.map((p) => p.label).join(", ")}. This is a demo, so nothing is actually charged.
+- Payment: after placing the order, a Midtrans payment window opens with cards, bank transfer (virtual account), QRIS, GoPay and ShopeePay. The store runs in Midtrans test mode, so no real money moves: pay with the test card 4811 1111 1111 1114 (CVV 123, OTP 112233) or Midtrans's payment simulator. Orders must be paid within 24 hours or they're cancelled. An unpaid order can be paid later from My orders (/orders) with "Pay now".
 - Buyers need a Vega account to check out. The cart is saved to the account, so it follows them across devices.
 - Returns: 30 days from delivery, full refund, for any reason, with the accessories included. Returns are free.
 - Warranty: 1 year on every product against manufacturing defects. Accidental damage (drops, cracks, liquid) isn't covered.

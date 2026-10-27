@@ -67,6 +67,12 @@ export default function StatusActions({
         </div>
       ) : (
         <div className="flex flex-wrap items-center gap-4">
+          {status === "awaiting_payment" && (
+            <p className="text-sm text-muted">
+              Waiting for the customer to pay. It moves to Processing by itself
+              once Midtrans confirms the payment.
+            </p>
+          )}
           {forward.map((next) => (
             <button
               key={next}
