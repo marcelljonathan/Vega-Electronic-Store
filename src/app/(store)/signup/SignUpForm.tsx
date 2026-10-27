@@ -7,8 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 import { mergeGuestCartOnSignIn } from "../CartProvider";
 import { Field, inputClass } from "../FormField";
 import PasswordInput from "../_auth/PasswordInput";
-
-const MIN_PASSWORD = 8;
+import { MIN_PASSWORD } from "@/lib/account";
 
 type Errors = {
   fullName?: string;

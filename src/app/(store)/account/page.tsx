@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import SignOutButton from "./SignOutButton";
+import ProfileCard from "./ProfileCard";
 import { OrderListItem } from "../orders/OrderParts";
 import { ORDER_SELECT, type OrderRow } from "@/lib/orders";
 import { THREAD_SELECT, type SupportThread } from "@/lib/support-threads";
@@ -21,7 +22,6 @@ export default async function AccountPage() {
 
   const email = user.email ?? "";
   const fullName: string = user.user_metadata?.full_name || email.split("@")[0];
-  const firstName = fullName.split(" ")[0];
   // This buyer's 3 most recent orders.
   const { data: recent } = await supabase
     .from("orders")
@@ -48,33 +48,12 @@ export default async function AccountPage() {
 
   return (
     <div className="mx-auto flex max-w-280 flex-col gap-10 px-7 py-16">
-      <div className="flex flex-col gap-2">
-        <span className="text-xs font-bold uppercase tracking-[0.24em] text-muted">
-          My account
-        </span>
-        <h1 className="text-balance text-4xl font-medium tracking-tight sm:text-5xl">
-          Hi, {firstName}.
-        </h1>
-      </div>
+      <h1 className="text-center text-base font-bold uppercase tracking-[0.24em] text-fg">
+        My account
+      </h1>
 
       <div className="grid grid-cols-1 gap-5 md:grid-cols-[1fr_1.4fr]">
-        <section className="flex flex-col gap-4 rounded-3xl bg-card p-6 sm:p-8">
-          <h2 className="text-lg font-semibold">Profile</h2>
-          <dl className="flex flex-col gap-3 text-sm">
-            <div className="flex flex-col gap-0.5">
-              <dt className="text-xs text-muted">Name</dt>
-              <dd className="font-semibold">{fullName}</dd>
-            </div>
-            <div className="flex flex-col gap-0.5">
-              <dt className="text-xs text-muted">Email</dt>
-              <dd className="font-semibold break-all">{email}</dd>
-            </div>
-            <div className="flex flex-col gap-0.5">
-              <dt className="text-xs text-muted">Member since</dt>
-              <dd className="font-semibold">{memberSince}</dd>
-            </div>
-          </dl>
-        </section>
+        <ProfileCard fullName={fullName} email={email} memberSince={memberSince} />
 
         <section className="flex flex-col gap-4 rounded-3xl bg-card p-6 sm:p-8">
           <div className="flex items-center justify-between">

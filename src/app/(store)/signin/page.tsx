@@ -13,10 +13,11 @@ export const metadata: Metadata = {
 export default async function SignInPage({ searchParams }: PageProps<"/signin">) {
   const next = safeNext((await searchParams).next);
 
-  // Already signed in? Skip the form.
+  // Already signed in? Skip the form. Checked with Supabase itself (like
+  // /account does), so a session signed out elsewhere can't cause a loop.
   const supabase = await createClient();
-  const { data } = await supabase.auth.getClaims();
-  if (data?.claims) redirect(next);
+  const { data } = await supabase.auth.getUser();
+  if (data.user) redirect(next);
 
   return (
     <AuthLayout

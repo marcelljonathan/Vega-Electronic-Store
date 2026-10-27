@@ -14,8 +14,8 @@ export default async function SignUpPage({ searchParams }: PageProps<"/signup">)
   const next = safeNext((await searchParams).next);
 
   const supabase = await createClient();
-  const { data } = await supabase.auth.getClaims();
-  if (data?.claims) redirect(next);
+  const { data } = await supabase.auth.getUser();
+  if (data.user) redirect(next);
 
   return (
     <AuthLayout
